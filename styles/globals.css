@@ -24,3 +24,43 @@ a {
     background: black;
   }
 }
+
+.btn-legendary {
+  background-color: #fba118;
+  color: #fff;
+  font-size: xx-large;
+}
+
+.btn-legendary:hover {
+  background-color: #FFF;
+  color: #fba118;
+  transform: scale(1.5);
+  animation: myrotation 2s infinite;
+}
+
+@keyframes myrotation {
+  50% {transform: rotate(360deg);}
+}
+
+.lead {
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: medium;
+}
+
+.logout-icon:hover, .fa-plus-square:hover, .logout-img:hover {
+  cursor: pointer;
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  top: 30%;
+  left: 40%;
+  z-index: 1;
+}
+
+.modal_content {
+  background-color: white;
+  position: absolute;
+}
