@@ -19,6 +19,7 @@ function Login() {
       const result = await signInWithPopup(auth, googleAuth);
       toast('🦄 Authentication Successful!!!', { hideProgressBar: false, autoClose: 2000, type: 'info' });
     } catch (error) {
+      console.log('ERROR HERE', error');
       console.log(error);      
       toast('🦄 Authentication Error!!!', { hideProgressBar: false, autoClose: 2000, type: 'error' });
     }
