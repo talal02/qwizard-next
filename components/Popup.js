@@ -55,7 +55,11 @@ export default function PopUp({toggle, user}) {
             alert('You are already in this classroom');
           } else {
             new_user.classrooms.push(classCode);
-            new_classroom.students.push(new_user.email);
+            try {
+              new_classroom.students.push(new_user.email);
+            } catch(e) {
+              new_classroom.students = [new_user.email];
+            }
             try {
               await setDoc(userRef, new_user);
             } catch(error) {
