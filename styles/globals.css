@@ -34,12 +34,18 @@ a {
 .btn-legendary:hover {
   background-color: #FFF;
   color: #fba118;
-  transform: scale(1.5);
-  animation: myrotation 2s infinite;
+  transform: scale(1.25);
+  animation: myrotation 1s infinite;
 }
 
 @keyframes myrotation {
   50% {transform: rotate(360deg);}
+}
+
+.btn-orange {
+  background-color: #fba118;
+  color: #fff;
+  font-size: large;
 }
 
 .lead {
@@ -48,19 +54,41 @@ a {
   font-size: medium;
 }
 
-.logout-icon:hover, .fa-plus-square:hover, .logout-img:hover {
+.logout-icon:hover, .fa-plus-square:hover, .logout-img:hover, .close:hover {
   cursor: pointer;
 }
 
 .modal {
   display: block;
   position: fixed;
-  top: 30%;
+  top: 15%;
   left: 40%;
   z-index: 1;
 }
 
 .modal_content {
-  background-color: white;
+  background-color: #FFF;
   position: absolute;
+  border-radius: 15%;
+  padding: 5%;
 }
+
+.btn-candy {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: .5em;
+  margin: 20px auto;
+  border: solid .25em transparent;
+  padding: 1em 1.5em;
+  border-radius: 9em;
+  color: #FFF;
+  background: 
+    linear-gradient(to right bottom, #fba118, #ffda5f)
+      border-box;
+  font: 700 1.5em/ 1.25 georgia, sans-serif;
+  text-transform: uppercase;
+}
+
+.btn-candy::after { content: attr(title) }
+
+

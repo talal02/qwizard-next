@@ -1,10 +1,13 @@
 import Image from 'next/image';
-import {auth} from '../lib/firebase';
+import {auth, db} from '../lib/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import {useAuthState} from 'react-firebase-hooks/auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { toast } from "react-toastify";
+import {userConverter} from '../components/User';
+import User from '../components/User';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 
 function Login() {
   const googleAuth = new GoogleAuthProvider();
@@ -22,6 +25,16 @@ function Login() {
 
   useEffect(() => {
     if (user && user.email.includes("@nu.edu.pk") && !loading) {
+      const fetchUserData = async () => {
+        const ref = doc(db, "users", user.email).withConverter(userConverter);
+        const docSnap = await getDoc(ref);
+  
+        if(!docSnap.exists()) {
+          await setDoc(ref, new User(user.displayName, user.email, user.photoURL, []));
+          console.log('DONE!!!');
+        } 
+      }
+      fetchUserData().catch(console.error);
       setLoading(true);
       toast('🦄 Login Successful!!!', { hideProgressBar: false, autoClose: 2000, type: 'success' });
     } else if (user && !loading && !user.email.includes("@nu.edu.pk")) {
