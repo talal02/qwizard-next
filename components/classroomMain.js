@@ -1,7 +1,7 @@
-function ClassroomMain({name, teacher, code, semester, type}) {
+function ClassroomMain({name, teacher, code, semester, type, openClass}) {
   return (
     <div className='col-sm-12 col-md-6 col-lg-4 col-xl-3'>
-      <a href="#" class="data-card">
+      <a onClick={openClass} class="data-card">
         <h3 className="h3-classmain">{code}</h3>
         <h4 className="h4-classmain">{name}</h4>
         <p className="p-classmain">{semester} - {type}</p>

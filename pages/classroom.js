@@ -62,7 +62,7 @@ function Classroom() {
         <section className='page-contain row'>
           {enrolledClassrooms.length > 0 && enrolledClassrooms.map((classroom) => {
             return (
-              <ClassroomMain name={classroom.name} teacher={classroom.teacher_name} code={classroom.code} semester={classroom.semester} type={classroom.type} />
+              <ClassroomMain name={classroom.name} teacher={classroom.teacher_name} code={classroom.code} semester={classroom.semester} type={classroom.type} openClass={() => router.push('/classdesign')}/>
             );
           })}
         </section>
