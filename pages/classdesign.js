@@ -47,7 +47,7 @@ function classdesign() {
           <div class="wrap-input1 validate-input d-flex mt-3 justify-content-center" data-validate="Message is required">
             <textarea class="input1 w-100 w-sm-75 w-lg-50" id="announcement" onChange={(e) => setText(e.target.value)} placeholder="Announcement"></textarea>
             <span class="shadow-input1"></span>
-            <button class="floating-right-bottom-btn" onClick={() => {announcements.push(text); setText(''); document.getElementById('announcement').value = '';}}>📯</button>
+            <button class="floating-right-bottom-btn" onClick={() => {announcements.unshift(text); setText(''); document.getElementById('announcement').value = '';}}>📯</button>
           </div>
         </section>
         <div class="container">
