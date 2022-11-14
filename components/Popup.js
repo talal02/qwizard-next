@@ -56,8 +56,12 @@ export default function PopUp({toggle, user}) {
           } else {
             new_user.classrooms.push(classCode);
             try {
+              if(new_classroom.announcements === undefined) {
+                new_classroom.announcements = [];
+              }
               new_classroom.students.push(new_user.email);
             } catch(e) {
+              console.error(e);
               new_classroom.students = [new_user.email];
             }
             try {

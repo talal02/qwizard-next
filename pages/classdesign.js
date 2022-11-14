@@ -5,11 +5,29 @@ import {useRouter} from 'next/router';
 import Image from 'next/image';
 import AnnouncementMain from '../components/AnnouncementMain';
 
+
 function classdesign() {
   const [user, setUser] = useAuthState(auth);
   const [text, setText] = useState('');
   const [announcements, setAnnouncements] = useState([]);
   const router = useRouter();
+  const { classCode } = router.query;
+  const [classroom, setClassroom] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+      let componentMounted = true;
+      if(classCode != null) {
+        fetchData(classCode).then(data => {
+          if(componentMounted) {
+            setClassroom(data);
+            setLoading(false);
+          }
+        });
+      }
+      return () => { componentMounted = false };
+  }, [classCode]);
 
   useEffect(() => {
     if(!user) {
@@ -66,5 +84,16 @@ function classdesign() {
   } 
   return <></>;
 }
+
+let fetchData = async (classCode) => {
+  const ref = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
+  const docSnap = await getDoc(ref);
+  if(docSnap.exists()) {
+    let new_classroom = docSnap.data();
+    return new_classroom;
+  }
+  return null;
+}
+
 
 export default classdesign;

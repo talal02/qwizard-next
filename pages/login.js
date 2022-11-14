@@ -26,7 +26,8 @@ function Login() {
   };
 
   useEffect(() => {
-    if (user && user.email.includes("@nu.edu.pk") && !loading) {
+    // && user.email.includes("@nu.edu.pk")
+    if (user && !loading) {
       const fetchUserData = async () => {
         const ref = doc(db, "users", user.email).withConverter(userConverter);
         const docSnap = await getDoc(ref);

@@ -19,7 +19,6 @@ function Classroom() {
     };
 
   useEffect(() => {
-    console.log('CALLED AGAIN');
     if(!user) {
       router.push('/login');
     } else {
@@ -62,7 +61,7 @@ function Classroom() {
         <section className='page-contain row'>
           {enrolledClassrooms.length > 0 && enrolledClassrooms.map((classroom) => {
             return (
-              <ClassroomMain name={classroom.name} teacher={classroom.teacher_name} code={classroom.code} semester={classroom.semester} type={classroom.type} openClass={() => router.push('/classdesign')}/>
+              <ClassroomMain name={classroom.name} teacher={classroom.teacher_name} code={classroom.code} semester={classroom.semester} type={classroom.type} openClass={() => router.push(`/classroom/${classroom.code}`)}/>
             );
           })}
         </section>
