@@ -6,7 +6,7 @@ import Image from 'next/image';
 import AnnouncementMain from '../../components/AnnouncementMain';
 import { doc, getDoc } from 'firebase/firestore';
 import {classroomConverter} from "../../components/Classroom";
-
+import Link from 'next/link';
 
 function Classroom() {
   const [user, setUser] = useAuthState(auth);
@@ -75,15 +75,27 @@ function Classroom() {
               </div>
             </section>
             <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-8 mx-auto p-4">
-                  {
-                    announcements.map((a) => (
-                      <AnnouncementMain author={`Talal Ahmed`} announcement={a}/>
-                    ))
-                  }
+              <div class="row">
+                <div class="col-12 col-md-6">
+                  <div class="btn bg-custom text-white btn-block mt-3">
+                    <Link href="/quiz_form">Generate Quiz</Link>
+                  </div>
                 </div>
-            </div>
+                <div class="col-12 col-md-6">
+                  <div class="btn bg-custom text-white btn-block mt-3">
+                    <Link href="/current_quiz">Compiled Quiz So Far</Link>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 col-md-8 mx-auto p-4">
+                    {
+                      announcements.map((a) => (
+                        <AnnouncementMain author={`Talal Ahmed`} announcement={a}/>
+                      ))
+                    }
+                  </div>
+              </div>
           </div>
         </>}
     </div>
