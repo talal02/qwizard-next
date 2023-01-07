@@ -9,7 +9,7 @@ import axios from "axios"
 export default function Questions(props){
     const question_url = "http://localhost:8080/"
     const context = props.content
-    //const context = "I am writing code to build my final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."
+    //const context = "I write code to build my final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."
     const [Questions,setQuestions] = useState([])
     const [loading, setLoading] = useState(false)
     const [quiz, setQuiz] = useRecoilState(quiz_atom)
