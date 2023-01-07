@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import Questions from "./questions"
-import styles from '../styles/Home.module.css'
+
 import QWizard_logo from "./logo"
 import Dropzone from 'react-dropzone'
+import MCQ_Questions from "./mcq_questions"
 import Link from 'next/link';
 
 
-export default function Quiz_form() {
+export default function MCQ_Quiz_form() {
     const [passage, setPassage] = useState('')
     const [generate, setGenerate] = useState(false)
     
@@ -19,7 +19,7 @@ export default function Quiz_form() {
         <QWizard_logo></QWizard_logo> 
         <div class='container'>
             <div style={{'display': 'flex','justifyContent':'space-between'}}>
-            <h2 class>Generate Short Answer Questions <small><span style={{'color':'orange'}}>paste a sample text to generate questions</span></small></h2>
+            <h2 class>Generate Multiple Choice Questions <small><span style={{'color':'orange'}}>paste a sample text to generate questions</span></small></h2>
             <button type="button" class="btn btn-light" style={{'border': '1px solid orange'}}><Link href="/current_quiz">Check out Quiz</Link></button>
             
             </div>
@@ -48,7 +48,7 @@ export default function Quiz_form() {
                         <button type="button" style={{'width':'100%', 'height':'auto', 'backgroundColor':'orange', 'borderRadius': '20px', 'padding':'0.5%', 'marginTop':'4%', "marginBottom":"2%"}} onClick={() => setGenerate(true)}><h5>Go!</h5></button>
                 </div>
             </form>
-            {generate ? <Questions content={passage}></Questions>:null}
+            {generate ? <MCQ_Questions content={passage}></MCQ_Questions>:null}
         </div>
         </>
         
