@@ -16,11 +16,18 @@ export default function Quiz_form() {
   
     return (
         <>
-        <QWizard_logo></QWizard_logo> 
+        <QWizard_logo></QWizard_logo>
         <div class='container'>
+            <div className="row mb-3 justify-content-space-between">
+                <div className="col-8">
+                {/* <small><span style={{'color':'orange'}}>paste a sample text to generate questions</span></small> */}
+                    <h3 class>Generate Short Answer Questions</h3>
+                </div>
+                <div className="col-4">
+                    <button type="button" class="btn btn-orange"><Link href="/current_quiz">Check out Quiz</Link></button>
+                </div>
+            </div>
             <div style={{'display': 'flex','justifyContent':'space-between'}}>
-            <h2 class>Generate Short Answer Questions <small><span style={{'color':'orange'}}>paste a sample text to generate questions</span></small></h2>
-            <button type="button" class="btn btn-light" style={{'border': '1px solid orange'}}><Link href="/current_quiz">Check out Quiz</Link></button>
             
             </div>
             <form>
@@ -44,10 +51,10 @@ export default function Quiz_form() {
                 </Dropzone> */}
 
                 </div>
-                <div class='form-group'>
-                        <button type="button" style={{'width':'100%', 'height':'auto', 'backgroundColor':'orange', 'borderRadius': '20px', 'padding':'0.5%', 'marginTop':'4%', "marginBottom":"2%"}} onClick={() => setGenerate(true)}><h5>Go!</h5></button>
-                </div>
             </form>
+            <div className="row justify-content-center">
+                <button type="button col-12" class="btn btn-orange w-50" onClick={() => setGenerate(true)}>Go!</button>
+            </div>
             {generate ? <Questions content={passage}></Questions>:null}
         </div>
         </>
