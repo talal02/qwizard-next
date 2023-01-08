@@ -114,7 +114,12 @@ function Classroom() {
                       <Link href="/quiz_form">Generate Quiz</Link>
                     </div>
                   </div>
-                  <div className="col-12 col-md-6">
+                  <div class="col-12 col-md-6">
+                  <div class="btn bg-custom text-white btn-block mt-3">
+                    <Link href="/mcq_quiz_form">Generate Multiple Choice Questions</Link>
+                  </div>
+                </div>
+                  <div className="col-12 col-md-12">
                     <div className="btn bg-custom text-white btn-block mt-3">
                       <Link href="/current_quiz">Compiled Quiz So Far</Link>
                     </div>
