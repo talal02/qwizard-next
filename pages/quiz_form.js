@@ -27,6 +27,15 @@ export default function Quiz_form() {
                     <button type="button" class="btn btn-orange"><Link href="/current_quiz">Check out Quiz</Link></button>
                 </div>
             </div>
+            <div className="row mb-3 justify-content-center">
+                <div className="lead col-12" style={{
+                        fontSize: 'larger',
+                        color: 'orange'
+                    }}>
+                        Paste a sample text to generate Questions
+                </div> 
+            </div>
+
             <div style={{'display': 'flex','justifyContent':'space-between'}}>
             
             </div>
