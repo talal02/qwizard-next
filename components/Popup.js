@@ -1,15 +1,7 @@
-import React, { useState } from "react";
-import { setDoc, doc, getDoc } from 'firebase/firestore';
-import {userConverter} from '../components/User';
-import {db} from '../lib/firebase';
-import Classroom, {classroomConverter} from "../components/Classroom";
 export default function PopUp({toggle, user}) {
   const [addClass, setAddClass] = useState(false);
   const [joinClass, setJoinClass] = useState(false);
-  const [className, setClassName] = useState("");
-  const [classCode, setClassCode] = useState("");
-  const [classType, setClassType] = useState("");
-  const [classSemester, setClassSemester] = useState("");
+
 
   const handleClick = () => {
    toggle();
@@ -92,19 +84,19 @@ export default function PopUp({toggle, user}) {
             <div>
                 <div className="mb-3">
                   <label htmlFor="className" className="form-label">Class Name</label>
-                  <input type="text" className="form-control" id="className" onChange={(e) => setClassName(e.target.value)}/>
+                  <input type="text" className="form-control" id="className" placeholder="Software Engineering" onChange={(e) => setClassName(e.target.value)}/>
                 </div>
                 <div className="mb-3">
                   <label htmlFor="code" className="form-label">Class Code</label>
-                  <input type="text" className="form-control" id="classCode" onChange={(e) => setClassCode(e.target.value)} />
+                  <input type="text" className="form-control" id="classCode" placeholder="CSE3004" onChange={(e) => setClassCode(e.target.value)} />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="classType" className="form-label">Class Type</label>
-                  <input type="text" className="form-control" id="classType" onChange={(e) => setClassType(e.target.value)} />
+                  <input type="text" className="form-control" id="classType" placeholder="Elective or Core" onChange={(e) => setClassType(e.target.value)} />
                 </div>
                 <div className="mb-3">
                   <label htmlFor="classSemester" className="form-label">Class Semester</label>
-                  <input type="text" className="form-control" id="classSemester" onChange={(e) => setClassSemester(e.target.value)} />
+                  <input type="text" className="form-control" id="classSemester" placeholder="" onChange={(e) => setClassSemester(e.target.value)} />
                 </div>
                 <div className="text-center">
                   <button className="btn btn-orange" onClick={addClassroom}>Add</button>

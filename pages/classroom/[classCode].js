@@ -4,9 +4,10 @@ import {db, auth} from '../../lib/firebase';
 import {useRouter} from 'next/router';
 import Image from 'next/image';
 import AnnouncementMain from '../../components/AnnouncementMain';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import {classroomConverter} from "../../components/Classroom";
 import Link from 'next/link';
+import Announcement from '../../components/Announcement';
 
 function Classroom() {
   const [user, setUser] = useAuthState(auth);
@@ -24,12 +25,49 @@ function Classroom() {
         fetchData(classCode).then(data => {
           if(componentMounted && data !== null) {
             setClassroom(data);
+            setAnnouncements(data.announcements);
+            console.log('DATA', data, 'USER', user, 'ANNNN', data.announcements);
             setLoading(false);
           }
         });
       }
       return () => { componentMounted = false };
   }, [classCode]);
+
+  const postAnnouncement = async () => {
+    try {
+      if(text != "") {
+        try {
+          const classRef = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
+          console.log(classRef);
+          console.log('0')
+          let new_announcement = { text, date: new Date().getTime()};
+          console.log('1');
+          if (classroom.announcements === undefined || classroom.announcements === null) {
+            classroom.announcements = [];
+          }
+          if (classroom.students === undefined || classroom.students === null) {
+            classroom.students = [];
+          }
+          classroom.announcements.unshift(new_announcement);
+          console.log('2');
+          setAnnouncements(classroom.announcements);
+          setText('');
+          console.log('3');
+          document.getElementById('announcement').value = '';
+          console.log('Announcement', new_announcement);
+          console.log('Classroom', classroom);
+          await setDoc(classRef, classroom);
+        } catch (err) {
+          console.log("Error posting announcement", err);
+        }
+      } else {
+        throw new Error("Announcement cannot be empty");
+      }
+    } catch(err) {
+      console.log("Error posting announcement", err);
+    }
+  }
 
   useEffect(() => {
     if(!user) {
@@ -56,42 +94,48 @@ function Classroom() {
         </div>}
         {!loading && classroom !== null && <>
             <section>
-              <div class="container h-100">
-                  <div class="text-white bg-primary border rounded border-0 p-4 py-5 bg-custom">
-                      <div class="row h-100">
-                          <div class="col-md-10 col-xl-8 text-center d-flex d-sm-flex d-md-flex justify-content-center align-items-center mx-auto justify-content-md-start align-items-md-center justify-content-xl-center">
+              <div className="container h-100">
+                  <div className="text-white bg-primary border rounded border-0 p-4 py-5 bg-custom">
+                      <div className="row h-100">
+                          <div className="col-md-10 col-xl-8 text-center d-flex d-sm-flex d-md-flex justify-content-center align-items-center mx-auto justify-content-md-start align-items-md-center justify-content-xl-center">
                               <div>
-                                  <h1 class="text-uppercase fw-bold text-white mb-3">{classroom.name}</h1>
+                                  <h1 className="text-uppercase fw-bold text-white mb-3">{classroom.name}</h1>
                                   <p><strong>{classroom.code} - {classroom.type} - {classroom.semester} - {classroom.teacher_name}</strong></p>
                               </div>
                           </div>
                       </div>
                   </div>
               </div>
-              <div class="wrap-input1 validate-input d-flex mt-3 justify-content-center" data-validate="Message is required">
-                <textarea class="input1 w-100 w-sm-75 w-lg-50" id="announcement" onChange={(e) => setText(e.target.value)} placeholder="Announcement"></textarea>
-                <span class="shadow-input1"></span>
-                <button class="floating-right-bottom-btn" onClick={() => {announcements.unshift(text); setText(''); document.getElementById('announcement').value = '';}}>📯</button>
-              </div>
+              {
+                classroom.teacher_email == user.email && <div className='container'>
+                  <div className="row">
+                  <div className="col-12 col-md-6">
+                    <div className="btn bg-custom text-white btn-block mt-3">
+                      <Link href="/quiz_form">Generate Quiz</Link>
+                    </div>
+                  </div>
+                  <div className="col-12 col-md-6">
+                    <div className="btn bg-custom text-white btn-block mt-3">
+                      <Link href="/current_quiz">Compiled Quiz So Far</Link>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              }
+              {
+                classroom.teacher_email == user.email && <div className="wrap-input1 validate-input d-flex mt-3 justify-content-center" data-validate="Message is required">
+                  <textarea className="input1 w-100 w-sm-75 w-lg-50" id="announcement" onChange={(e) => {console.log(text); setText(e.target.value);}} placeholder="Announcement"></textarea>
+                  <span className="shadow-input1"></span>
+                  <button className="floating-right-bottom-btn" onClick={postAnnouncement}>📯</button>
+                </div>
+              }
             </section>
-            <div class="container">
-              <div class="row">
-                <div class="col-12 col-md-6">
-                  <div class="btn bg-custom text-white btn-block mt-3">
-                    <Link href="/quiz_form">Generate Quiz</Link>
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <div class="btn bg-custom text-white btn-block mt-3">
-                    <Link href="/current_quiz">Compiled Quiz So Far</Link>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12 col-md-8 mx-auto p-4">
+            <div className="container">
+              <div className="row">
+                <div className="col-12 col-md-8 mx-auto p-4">
                     {
                       announcements.map((a) => (
-                        <AnnouncementMain author={`Talal Ahmed`} announcement={a}/>
+                        <AnnouncementMain author={classroom.teacher_name} announcement={a}/>
                       ))
                     }
                   </div>

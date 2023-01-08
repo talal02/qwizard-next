@@ -51,26 +51,30 @@ a {
 .lead {
   text-align: justify;
   text-justify: inter-word;
-  font-size: medium;
+  font-size: large;
 }
 
 .logout-icon:hover, .fa-plus-square:hover, .logout-img:hover, .close:hover {
   cursor: pointer;
 }
 
+.close {
+  font-size: xx-large;
+}
+
 .modal {
   display: block;
   position: fixed;
   top: 15%;
-  left: 40%;
-  z-index: 1;
+  left: 25%;
+  z-index: 99;
 }
 
 .modal_content {
   background-color: #FFF;
   position: absolute;
-  border-radius: 15%;
-  padding: 5%;
+  border-radius: 20px;
+  padding: 25px;
 }
 
 .btn-candy {

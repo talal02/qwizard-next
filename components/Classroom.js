@@ -28,7 +28,7 @@ export const classroomConverter = {
   },
   fromFirestore: function(snapshot, options) {
     const data = snapshot.data(options);
-    return new Classroom(data.name, data.teacher_name, data.teacher_email, data.code, data.type, data.semester);
+    return new Classroom(data.name, data.teacher_name, data.teacher_email, data.code, data.type, data.semester, data.announcements);
   }
 };
 

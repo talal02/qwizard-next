@@ -67,19 +67,23 @@ function Login() {
                     <Image src={user.photoURL} className='mx-auto' alt="Qwizard Logo" width={100} height={100} />
                   </div>
                   <div className='d-flex mt-3'>
-                    <p className='mx-auto'>Welcome, {user.displayName}</p>
-                    <p className='mx-auto'>Email: {user.email}</p>
+                    <p className='mx-auto lead'>Welcome, {user.displayName}<br></br>Email: {user.email}</p>
                   </div>
                   <div className='d-flex justify-content-center'>
-                    <Image src="/loader.svg" className='mx-auto' alt="Profile Logo" width={100} height={100} />
+                    <Image src="/loader.svg" className='mx-auto' alt="Profile Logo" width={50} height={50} />
                   </div>
                 </section>
                 :
                 <section>
                   <div className='d-flex'>
-                    <p className='lead'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                    <p className='lead'>Qwizard  is a Learning Management System (LMS) which incorporates inside itself:<br></br>
+                      🌎Automatic Question Generation (Short Answer + MCQs)<br></br>
+                      🌎Automatic Solution (Answer) Generation<br></br>
+                      🌎Automatic Quiz Marking.<br></br>
+                      🌎Real-time Quiz Attempting Session for students.
+                    </p>
                   </div>
-                  <div className='d-flex mb-3'>
+                  <div className='d-flex mt-5 mb-3'>
                   <button className='mx-auto btn btn-legendary' onClick={loginFunction}>Login / SignUp <i className="fa fa-google" aria-hidden="true"></i></button>
                   </div>
                 </section>
