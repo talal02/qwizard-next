@@ -3,10 +3,10 @@ import { useState } from "react"
 import { ThreeCircles } from "react-loader-spinner"
 import Swal from "sweetalert2"
 import {  useRecoilState } from "recoil"
-import { quiz_atom }from "../atoms/atoms"
+import { quiz_atom }from "../../atoms/atoms"
 import axios from "axios"
 
-export default function Questions(props){
+export default function Questions_Text(props){
     const question_url = "http://localhost:8080/"
     const context = props.content
     //const context = "I write code to build our final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."

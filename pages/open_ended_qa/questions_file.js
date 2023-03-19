@@ -3,10 +3,10 @@ import { useState } from "react"
 import { ThreeCircles } from "react-loader-spinner"
 import Swal from "sweetalert2"
 import {  useRecoilState } from "recoil"
-import { quiz_atom }from "../atoms/atoms"
+import { quiz_atom }from "../../atoms/atoms"
 import axios from "axios"
 
-export default function MCQ_Questions(props){
+export default function Questions_File(props){
     const question_url = "http://localhost:8080/"
     const context = props.content
     //const context = "I write code to build our final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."
@@ -16,7 +16,7 @@ export default function MCQ_Questions(props){
 
 
     useEffect(()=> {
-        axios.post(question_url+'generate_mcqs', {"content": context}).then(res => {
+        axios.post(question_url+'generate_qa', {"content": context}).then(res => {
             setQuestions(res.data)
             console.log(res)
             setLoading(false)
@@ -26,12 +26,8 @@ export default function MCQ_Questions(props){
 
     const saveQuestion = (index) => {
         const q = document.getElementById('q'+String(index)).innerHTML
-        const op1 = document.getElementById('op1'+String(index)).innerHTML
-        const op2 = document.getElementById('op2'+String(index)).innerHTML
-        const op3 = document.getElementById('op3'+String(index)).innerHTML
-        const op4 = document.getElementById('op4'+String(index)).innerHTML
         const a = document.getElementById('a'+String(index)).innerHTML
-        const pair = {'question': q, 'option1':op1, 'option2':op2, 'option3':op3, 'option4':op4, 'answer': a}
+        const pair = {'question': q, 'answer': a}
         setQuiz((current) => [...current, pair])
         console.log(quiz)
         Swal.fire(
@@ -47,23 +43,33 @@ export default function MCQ_Questions(props){
             question_arr.push(
                 <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
                     <div class="row">
-                        <div class="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
-                        <div class="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
-                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 1: </span></div>
-                        <div class="col-10" id={'op1'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Options'][0]}</div>
-                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 2: </span></div>
-                        <div class="col-10" id={'op2'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Options'][1]}</div>
-                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 3: </span></div>
-                        <div class="col-10" id={'op3'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Options'][2]}</div>
-                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 4: </span></div>
-                        <div class="col-10" id={'op4'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Options'][3]}</div>
-                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
-                        <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
-                        <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}>   
+                    <div class="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
+                    <div class="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
+                    <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
+                    <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
+                    <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
+                        
                         <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
-                            {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
-                        </div> 
-                    </div> 
+                        {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
+                    </div>
+                    {/* <EditText
+                        name='textbox3'
+                        defaultValue={question['Question']}
+                        editButtonProps={{ style: { marginLeft: '5px', width: 16 } }}
+                        showEditButtonn
+                    />
+                    <EditText
+                        name='textbox3'
+                        defaultValue={question['Answer']}
+                        editButtonProps={{ style: { marginLeft: '5px', width: 16 } }}
+                        showEditButton
+                    /> */}
+                    {/* <div className = 'tasks-container'>
+            <div contenteditable="true" onInput={e => editTask(item.id, e.currentTarget.textContent)} >
+                {item.chore}
+            </div> */}
+                </div> 
+                
                 </div>
             )
                    
