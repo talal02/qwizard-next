@@ -27,10 +27,11 @@ export default function Questions_Text(props){
     const saveQuestion = (index) => {
         const q = document.getElementById('q'+String(index)).innerHTML
         const a = document.getElementById('a'+String(index)).innerHTML
-        const marks = document.getElementById('marks'+String(index)).value
+        const marks = document.getElementById('marks'+String(index)).innerHTML
+        console.log("MARKS -> ", marks);
         const pair = {'question': q, 'answer': a, 'marks': marks, 'obtainedMarks': 0}
         setQuiz((current) => [...current, pair])
-        console.log(quiz)
+        console.log("MY QUIZ", quiz);
         Swal.fire(
             'Question saved to quiz'
           )
@@ -40,20 +41,19 @@ export default function Questions_Text(props){
         console.log('Questions-->', Questions)
         const question_arr =[]
         Questions.map((question, index) => {
-            question['marks'] = 1;
             question_arr.push(
-                <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
-                    <div class="row">
-                    <div class="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
-                    <div class="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
-                    <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
-                    <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
-                    <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
-                    <div class="col-10" id={'marks'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['marks']}</div>
-                    <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
+                <div className="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
+                    <div className="row">
+                    <div className="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
+                    <div className="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
+                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
+                    <div className="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
+                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                    <div className="col-10" id={'marks'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{1}</div>
+                    <div className="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
                         
-                        <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
-                        {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
+                        <button type="button" className="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
+                        {/* <button type="button" className="btn btn-warning">Delete Question</button> */}
                     </div>
                     {/* <EditText
                         name='textbox3'
@@ -88,7 +88,7 @@ export default function Questions_Text(props){
                 width="150%"
                 color="#ffa500"
                 wrapperStyle={{}}
-                wrapperClass=""
+                wrapperclassName=""
                 visible={true}
                 ariaLabel="three-circles-rotating"
                 outerCircleColor=""
@@ -114,8 +114,8 @@ export default function Questions_Text(props){
         <>
        {loading ? <div style={{"display":"flex", "flexDirection":"column","justifyContent": "space-between"}}>
        <div>
-                        <p class="h3">Please wait.<br></br>
-                        <small class="text-muted"><span style={{'color':'orange'}}>Your list of Q/A's is being generated.</span></small>
+                        <p className="h3">Please wait.<br></br>
+                        <small className="text-muted"><span style={{'color':'orange'}}>Your list of Q/A's is being generated.</span></small>
                          </p>    
                         </div> 
                         
@@ -126,7 +126,7 @@ export default function Questions_Text(props){
                        
                     </div>: 
                     <div>
-                        <div class="alert alert-primary h4" role="alert" style={{"paddingTop":"2%"}}>You can edit the question/answers by clicking on their respective boxes.</div>
+                        <div className="alert alert-primary h4" role="alert" style={{"paddingTop":"2%"}}>You can edit the question/answers by clicking on their respective boxes.</div>
                         {showQuestions()}
                     </div>
        

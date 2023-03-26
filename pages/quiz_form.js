@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from "axios"
 import Questions_Text from "./open_ended_qa/questions_text"
 import Questions_File from "./open_ended_qa/questions_file"
+import { useRouter } from 'next/router'
 
 
 export default function Quiz_form() {
@@ -15,6 +16,9 @@ export default function Quiz_form() {
     const [genfromfile, setGenfromfile] = useState(false) 
     const [generate, setGenerate] = useState(false)
     const [file, setFile] = useState(null) 
+    const router = useRouter()
+    const { classCode } = router.query
+
     
     const onChangeHandler= async event=>{
         // setFile(event.target.files[0])
@@ -47,7 +51,7 @@ export default function Quiz_form() {
                     <h3 class>Generate Short Answer Questions</h3>
                 </div>
                 <div className="col-2">
-                    <button type="button" class="btn btn-orange"><Link href="/current_quiz">Check out Quiz</Link></button>
+                    <button type="button" class="btn btn-orange"><Link href={`/current_quiz?classCode=${classCode}`}>Check out Quiz</Link></button>
                 </div>
             </div>
             <div className="row mb-3 justify-content-center">

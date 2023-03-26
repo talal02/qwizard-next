@@ -27,7 +27,8 @@ export default function Questions_File(props){
     const saveQuestion = (index) => {
         const q = document.getElementById('q'+String(index)).innerHTML
         const a = document.getElementById('a'+String(index)).innerHTML
-        let pair = {'question': q, 'answer': a}
+        const marks = document.getElementById('marks'+String(index)).innerHTML
+        let pair = {'question': q, 'answer': a, 'marks': marks, 'obtained_marks': 0}
         setQuiz((current) => [...current, pair])
         console.log(quiz)
         Swal.fire(
@@ -47,10 +48,10 @@ export default function Questions_File(props){
                     <div class="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
                     <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
                     <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
+                    <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                    <div class="col-10" id={'marks'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{1}</div>
                     <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
-                        
-                        <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
-                        {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
+                    <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
                     </div>
                     {/* <EditText
                         name='textbox3'

@@ -4,12 +4,15 @@ import {Dropzone} from 'react-dropzone'
 import Link from 'next/link';
 import axios from "axios"
 import MCQ_Questions from "./mcq_qa/mcq_questions";
+import { useRouter } from 'next/router'
 
 
 export default function MCQ_Quiz_form() {
     const url = process.env.NEXT_PUBLIC_API_URL
     const [passage, setPassage] = useState("")
     const [generate, setGenerate] = useState(false)
+    const router = useRouter()
+    const { classCode } = router.query
     
     const onChangeHandler= async event=>{
         // setFile(event.target.files[0])
@@ -41,7 +44,7 @@ export default function MCQ_Quiz_form() {
                     <h3 class>Generate Multiple Choice Questions</h3>
                 </div>
                 <div className="col-2">
-                    <button type="button" class="btn btn-orange"><Link href="/current_quiz">Check out Quiz</Link></button>
+                    <button type="button" class="btn btn-orange"><Link href={`/current_quiz?classCode=${classCode}`}>Check out Quiz</Link></button>
                 </div>
             </div>
             <div className="row mb-3 justify-content-center">
