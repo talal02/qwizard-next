@@ -7,7 +7,7 @@ import { quiz_atom } from "../../atoms/atoms"
 import axios from "axios"
 
 export default function MCQ_Questions(props){
-    const question_url = "http://localhost:8080/"
+    const question_url = process.env.NEXT_PUBLIC_API_URL
     const context = props.content
     //const context = "I write code to build our final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."
     const [Questions,setQuestions] = useState([])
@@ -31,7 +31,8 @@ export default function MCQ_Questions(props){
         const op3 = document.getElementById('op3'+String(index)).innerHTML
         const op4 = document.getElementById('op4'+String(index)).innerHTML
         const a = document.getElementById('a'+String(index)).innerHTML
-        const pair = {'question': q, 'option1':op1, 'option2':op2, 'option3':op3, 'option4':op4, 'answer': a}
+        const marks = document.getElementById('marks'+String(index)).innerHTML
+        let pair = {'question': q, 'option1':op1, 'option2':op2, 'option3':op3, 'option4':op4, 'answer': a, 'marks': marks, 'obtainedMarks': 0}
         setQuiz((current) => [...current, pair])
         console.log(quiz)
         Swal.fire(
@@ -43,7 +44,7 @@ export default function MCQ_Questions(props){
         console.log('Questions-->', Questions)
         const question_arr =[]
         Questions.map((question, index) => {
-        
+            question['marks'] = 1;
             question_arr.push(
                 <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
                     <div class="row">
@@ -59,7 +60,10 @@ export default function MCQ_Questions(props){
                         <div class="col-10" id={'op4'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Options'][3]}</div>
                         <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
                         <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
+                        <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                        <div class="col-10" id={'marks'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['marks']}</div>
                         <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}>   
+
                         <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>
                             {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
                         </div> 

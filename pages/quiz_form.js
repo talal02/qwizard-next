@@ -9,7 +9,7 @@ import Questions_File from "./open_ended_qa/questions_file"
 
 
 export default function Quiz_form() {
-    const url ="http://localhost:8080/"
+    const url = process.env.NEXT_PUBLIC_API_URL 
     const [passage, setPassage] = useState("")
     const [filePassage, setFilePassage] = useState("")
     const [genfromfile, setGenfromfile] = useState(false) 

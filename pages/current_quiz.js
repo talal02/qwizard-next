@@ -1,65 +1,137 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { quiz_atom }from "../atoms/atoms"
+import { useRouter } from 'next/router'
+import {db, auth} from '../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {classroomConverter} from "../components/Classroom";
+
 
 export default function current_quiz(){
-
-    const current_quiz = useRecoilValue(quiz_atom)
-
-    const show_quiz = () => {
-       const qa =[]
-       current_quiz.map(question => {
-            if(Object.keys(question).length == 2){
-                qa.push(
-                    <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
-                            <div class="row">
-                            <div class="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['question']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['answer']}</div>
-                            <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
-                            <button type="button" class="btn btn-warning"> Delete question from Quiz</button>
-                                {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
-                            </div>
-                           
-                        </div> 
-                        
-                        </div>
-             
     
-                )
-            }
-            else{
-                qa.push(
-                    <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
-                        <div class="row">
-                            <div class="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['question']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 1: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option1']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 2: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option2']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 3: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option3']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 4: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option4']}</div>
-                            <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
-                            <div class="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['answer']}</div>
-                            <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}>   
-                            <button type="button" class="btn btn-warning"> Delete question from Quiz</button>
-                                {/* <button type="button" class="btn btn-warning">Delete Question</button> */}
-                            </div>
-                        </div> 
-                    </div>
-                )
-            }
-           
-       })
+    const [quizName, setQuizName] = useState("");
+    const [validTill, setValidTill] = useState(null);
+    const [totalMarks, setTotalMarks] = useState(0);
+    const [duration, setDuration] = useState(0);
+    const router = useRouter()
+    const { classCode } = router.query
 
-        return qa 
+    let current_quiz = useRecoilValue(quiz_atom);
+
+    const calculateTotal = () => {
+        setTotalMarks(current_quiz.reduce((acc, curr) => acc + curr.marks));
+        return totalMarks;
     }
 
+    // const setQuiz = () => {
+    //     current_quiz.totalMarks = totalMarks;
+    //     current_quiz.duration = duration;
+    //     current_quiz.quizName = quizName;
+    //     current_quiz.validTill = validTill;
+    //     current_quiz.classCode = classCode;
+    //     if(classCode != null) {
+    //         fetchData(classCode).then(data => {
+    //           if(data !== null) {
+    //             let classRoom = data;
+    //             console.log(classRoom);
+    //             classRoom.quizzes = current_quiz;
+    //             console.log("AFTER");
+    //             console.log(classRoom);
+    //           }
+    //         });
+    //       }
+    // }
+
     return (
-        <>{show_quiz()}</>
+        <div>
+            {
+                    current_quiz.length > 0 && (
+                        <div>
+                            {
+                                current_quiz.map((question, idx) => {
+                                    if(Object.keys(question).length == 4){
+                                            <div key={`q-${idx}`} className="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
+                                                    <div className="row">
+                                                    <div className="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['question']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['answer']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['marks']}</div>
+                                                    <div className="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
+                                                    <button type="button" className="btn btn-warning"> Delete question from Quiz</button>
+                                                    </div>
+                                                   
+                                                </div> 
+                                                
+                                                </div>
+                                    }
+                                    else{
+                                            <div key={`q-${idx}`} className="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
+                                                <div className="row">
+                                                    <div className="col-2"  style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Question: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['question']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 1: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option1']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 2: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option2']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 3: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option3']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Option 4: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['option4']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['answer']}</div>
+                                                    <div className="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                                                    <div className="col-10"  style={{"border":"3px solid orange","padding":"1.5%"}}>{question['marks']}</div>
+                                                    <div className="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}>   
+                                                    <button type="button" className="btn btn-warning"> Delete question from Quiz</button>
+                                                        {/* <button type="button" className="btn btn-warning">Delete Question</button> */}
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                    }
+                                })
+                            }
+                        </div>       
+                    )
+                }
+            <div className="container">
+                <div className="form-group">
+                    <label for="quizName">Quiz Name:</label>
+                    <input type="text" className="form-control" onChange={(e) => setQuizName(e.target.value)} placeholder="Quiz Name" />
+                </div>
+                <div className="form-group">
+                    <label for="validTill">Valid Till:</label>
+                    <input type="datetime-local" className="form-control" id="validTill" onChange={(e) => {
+                        setValidTill(Date.parse(e.target.value));
+                    }} />
+                </div>
+                <div className="form-group">
+                    <label for="duration">Duration (In Minutes):</label>
+                    <input type="number" className="form-control" onChange={(e) => setDuration(e.target.value)} placeholder="Duration (In Minutes)" />
+                </div>
+                {
+                    current_quiz.length > 0 && (
+                    <div className="form-group">
+                        <label>Total Marks:</label>
+                        <label>{calculateTotal()}</label>
+                    </div>    
+                    )
+                }
+                <button  className="btn btn-primary">Set Quiz</button>
+            </div>
+
+        </div>
+
     )
 }
+
+let fetchData = async (classCode) => {
+    const ref = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
+    const docSnap = await getDoc(ref);
+    if(docSnap.exists()) {
+      let new_classroom = docSnap.data();
+      return new_classroom;
+    }
+    return null;
+  }

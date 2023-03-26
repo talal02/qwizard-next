@@ -16,6 +16,7 @@ function Classroom() {
   const router = useRouter();
   const { classCode } = router.query;
   const [classroom, setClassroom] = useState(null);
+  const [quiz, setQuiz] = useState({});
   const [loading, setLoading] = useState(true);
 
 
@@ -26,7 +27,16 @@ function Classroom() {
           if(componentMounted && data !== null) {
             setClassroom(data);
             setAnnouncements(data.announcements);
-            console.log('DATA', data, 'USER', user, 'ANNNN', data.announcements);
+            const currentDate = new Date();
+            const timestamp = currentDate.getTime();
+            if(data.quizzes && data.quizzes.validTill) {
+              data.quizzes.validTill = data.quizzes.validTill.toDate().getTime();
+            }
+            if(data.quizzes && (data.quizzes.validTill > timestamp)) {
+              setQuiz(data.quizzes);
+            } else {
+              setQuiz(null);
+            }
             setLoading(false);
           }
         });
@@ -40,9 +50,7 @@ function Classroom() {
         try {
           const classRef = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
           console.log(classRef);
-          console.log('0')
           let new_announcement = { text, date: new Date().getTime()};
-          console.log('1');
           if (classroom.announcements === undefined || classroom.announcements === null) {
             classroom.announcements = [];
           }
@@ -50,13 +58,9 @@ function Classroom() {
             classroom.students = [];
           }
           classroom.announcements.unshift(new_announcement);
-          console.log('2');
           setAnnouncements(classroom.announcements);
           setText('');
-          console.log('3');
           document.getElementById('announcement').value = '';
-          console.log('Announcement', new_announcement);
-          console.log('Classroom', classroom);
           await setDoc(classRef, classroom);
         } catch (err) {
           console.log("Error posting announcement", err);
@@ -109,27 +113,27 @@ function Classroom() {
               {
                 classroom.teacher_email == user.email && <div className='container'>
                   <div className="row">
-                  <div className="col-12 col-md-6">
+                    <div className="col-12 col-md-6">
+                      <div className="btn bg-custom text-white btn-block mt-3">
+                        <Link href={`/quiz_form?classCode=${classCode}`}>Generate Quiz</Link>
+                      </div>
+                    </div>
+                    <div className="col-12 col-md-6">
                     <div className="btn bg-custom text-white btn-block mt-3">
-                      <Link href="/quiz_form">Generate Quiz</Link>
+                      <Link href={`/mcq_quiz_form?classCode=${classCode}`}>Generate Multiple Choice Questions</Link>
                     </div>
                   </div>
-                  <div class="col-12 col-md-6">
-                  <div class="btn bg-custom text-white btn-block mt-3">
-                    <Link href="/mcq_quiz_form">Generate Multiple Choice Questions</Link>
-                  </div>
-                </div>
-                  <div className="col-12 col-md-12">
-                    <div className="btn bg-custom text-white btn-block mt-3">
-                      <Link href="/current_quiz">Compiled Quiz So Far</Link>
+                    <div className="col-12 col-md-12">
+                      <div className="btn bg-custom text-white btn-block mt-3">
+                        <Link href={`/current_quiz?classCode=${classCode}`}>Compiled Quiz So Far</Link>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               }
               {
                 classroom.teacher_email == user.email && <div className="wrap-input1 validate-input d-flex mt-3 justify-content-center" data-validate="Message is required">
-                  <textarea className="input1 w-100 w-sm-75 w-lg-50" id="announcement" onChange={(e) => {console.log(text); setText(e.target.value);}} placeholder="Announcement"></textarea>
+                  <textarea className="input1 w-100 w-sm-75 w-lg-50" id="announcement" onChange={(e) => { setText(e.target.value);}} placeholder="Announcement"></textarea>
                   <span className="shadow-input1"></span>
                   <button className="floating-right-bottom-btn" onClick={postAnnouncement}>📯</button>
                 </div>
@@ -139,8 +143,18 @@ function Classroom() {
               <div className="row">
                 <div className="col-12 col-md-8 mx-auto p-4">
                     {
-                      announcements.map((a) => (
-                        <AnnouncementMain author={classroom.teacher_name} announcement={a}/>
+                      quiz !== null && <div className='container rounded bg-primary text-white text-center p-3 mb-3'>
+                        <h5>Quiz is Available!</h5>
+                        <h5>Total Marks: {quiz.total_marks}</h5>
+                        <h5>Time to attempt: {quiz.attempt} mins</h5>
+                        <Link href={`/quiz/${classCode}-${quiz.name}`}>
+                          <span className='btn btn-sm bg-warning text-white'>Start Quiz</span>
+                        </Link>
+                      </div>
+                    }
+                    {
+                      announcements.map((a, idx) => (
+                        <AnnouncementMain key={`announcement-${idx}`} author={classroom.teacher_name} announcement={a}/>
                       ))
                     }
                   </div>

@@ -27,16 +27,17 @@ function Classrooms() {
       if(docSnap.exists()) {
         let new_user = docSnap.data();
         new_user.classrooms.push(classCode);
-        let new_classroom = new Classroom(className, new_user.name, new_user.email, classCode, classType, classSemester, [], []);
-        try {
-          await setDoc(ref, new_user);
-        } catch(error) {
-          console.log('Error Setting New User');
-        }
+        // quizzes, name, teacher_name, teacher_email, code, type, semester, announcements, students
+        let new_classroom = new Classroom({}, className, new_user.name, new_user.email, classCode, classType, classSemester, [], []);
         try {
           let classRef = doc(db, "classrooms", classCode).withConverter(classroomConverter);
           console.log('CLASS REF', classRef);
           await setDoc(classRef, new_classroom);
+          try {
+            await setDoc(ref, new_user);
+          } catch(error) {
+            console.log('Error Setting New User');
+          }
         } catch(error) {
           console.log('Error adding class', error);
         }

@@ -1,5 +1,6 @@
 class Classroom {
-  constructor(name, teacher_name, teacher_email, code, type, semester, announcements, students) {
+  constructor(quizzes, name, teacher_name, teacher_email, code, type, semester, announcements, students) {
+    this.quizzes = quizzes;
     this.name = name;
     this.teacher_name = teacher_name;
     this.teacher_email = teacher_email;
@@ -23,12 +24,13 @@ export const classroomConverter = {
       code: classroom.code,
       announcements: classroom.announcements,
       type: classroom.type,
-      semester: classroom.semester
+      semester: classroom.semester,
+      quizzes: classroom.quizzes
     };
   },
   fromFirestore: function(snapshot, options) {
     const data = snapshot.data(options);
-    return new Classroom(data.name, data.teacher_name, data.teacher_email, data.code, data.type, data.semester, data.announcements);
+    return new Classroom(data.quizzes, data.name, data.teacher_name, data.teacher_email, data.code, data.type, data.semester, data.announcements, data.students);
   }
 };
 

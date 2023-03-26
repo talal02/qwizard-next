@@ -7,7 +7,7 @@ import { quiz_atom }from "../../atoms/atoms"
 import axios from "axios"
 
 export default function Questions_Text(props){
-    const question_url = "http://localhost:8080/"
+    const question_url = process.env.NEXT_PUBLIC_API_URL
     const context = props.content
     //const context = "I write code to build our final year project. It is a bit tough but I am enjoying it. I plan to work for another 30 minutes and then I will sleep."
     const [Questions,setQuestions] = useState([])
@@ -27,7 +27,8 @@ export default function Questions_Text(props){
     const saveQuestion = (index) => {
         const q = document.getElementById('q'+String(index)).innerHTML
         const a = document.getElementById('a'+String(index)).innerHTML
-        const pair = {'question': q, 'answer': a}
+        const marks = document.getElementById('marks'+String(index)).value
+        const pair = {'question': q, 'answer': a, 'marks': marks, 'obtainedMarks': 0}
         setQuiz((current) => [...current, pair])
         console.log(quiz)
         Swal.fire(
@@ -39,7 +40,7 @@ export default function Questions_Text(props){
         console.log('Questions-->', Questions)
         const question_arr =[]
         Questions.map((question, index) => {
-        
+            question['marks'] = 1;
             question_arr.push(
                 <div class="container" style={{"fontSize":"120%", "marginTop":"4%"}}>
                     <div class="row">
@@ -47,6 +48,8 @@ export default function Questions_Text(props){
                     <div class="col-10" id={'q'+String(index)} contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}} onInput={e => {console.log(e.target.innerHTML)}}> {question['Question']}</div>
                     <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Answer: </span></div>
                     <div class="col-10" id={'a'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['Answer']}</div>
+                    <div class="col-2" style={{"border":"3px solid orange","padding":"1.5%"}}><span style={{'color':'brown'}}>Marks: </span></div>
+                    <div class="col-10" id={'marks'+String(index)}contentEditable="true" style={{"border":"3px solid orange","padding":"1.5%"}}>{question['marks']}</div>
                     <div class="col-12" style={{"border":"3px solid orange","padding":"1.5%", "display":"flex", "justifyContent":"space-between"}}> 
                         
                         <button type="button" class="btn btn-primary" onClick={ () => saveQuestion(index)}>Save Question to Quiz</button>

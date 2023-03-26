@@ -7,7 +7,7 @@ import MCQ_Questions from "./mcq_qa/mcq_questions";
 
 
 export default function MCQ_Quiz_form() {
-    const url ="http://localhost:8080/"
+    const url = process.env.NEXT_PUBLIC_API_URL
     const [passage, setPassage] = useState("")
     const [generate, setGenerate] = useState(false)
     
