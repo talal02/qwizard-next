@@ -1,52 +1,21 @@
 import {useRouter} from 'next/router';
 import {useEffect, useState} from 'react';
-
+import {db, auth} from '../../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {classroomConverter} from "../../components/Classroom";
 
 function Quiz() {
   const router = useRouter();
   const { quizCode } = router.query;
   const [startQuiz, setStartQuiz] = useState(false);
-  const [questions, setQuestions] = useState([
-    {
-      "question": "What is the capital of France?",
-      "choices": [
-        "Paris",
-        "London",
-        "Rome",
-        "Madrid"
-      ],
-      "answer": "Paris",
-      "type": "multiple"
-    }, 
-    {
-      "question": "What is the capital of Spain?",
-      "choices": [
-        "Paris",
-        "London",
-        "Rome",
-        "Madrid"
-      ],
-      "answer": "Madrid",
-      "type": "multiple"
-    },
-    {
-      "question": "What is the capital of Italy?",
-      "answer": "The capital of Italy is Rome.",
-      "type": "short"
-    },
-    {
-      "question": "What is the capital of the United Kingdom?",
-      "answer": "The capital of the United Kingdom is London.",
-      "type": "short"
-    },
-    {
-      "question": "What is the capital of the United States?",
-      "answer": "The capital of the United States is Washington",
-      "type": "short"
-    }
-  ]);
+  const [questions, setQuestions] = useState(null);
   const [attempted, setAttempted] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [classCode, setClassCode] = useState(null);
+  const [quiz, setQuiz] = useState(null);
+  const [time, setTime] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
   function maximizeScreen() {
     if (document.documentElement.requestFullscreen) {
       document.documentElement.requestFullscreen();
@@ -57,8 +26,32 @@ function Quiz() {
     } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
       document.documentElement.msRequestFullscreen();
     }
+    let curr = new Date();
+    setTime(curr.getTime() + time*60000);
     setStartQuiz(true);
   }
+
+  const getTime = () => {
+    const t = time - Date.now();
+    setMinutes(Math.floor((t / 1000 / 60) % 60));
+    setSeconds(Math.floor((t / 1000) % 60));
+  }
+
+  useEffect(() => {
+    if(minutes === 0 && seconds === 0) {
+      setStartQuiz(false);
+    }
+  }, [minutes, seconds]);
+
+  useEffect(() => {
+    if(time && time != 0) {
+      const interval = setInterval(() => {
+        getTime();
+      }, 1000);
+      return () => clearInterval(interval);  
+    }
+  }, []);
+
   useEffect(() => {
     window.addEventListener('blur', () => {
       if(startQuiz) {
@@ -109,7 +102,6 @@ if(isVisible) {
  
   // change flag value
   isVisible = true;
-  console.log('visible');
 }
 
 function onHidden() {
@@ -121,7 +113,6 @@ function onHidden() {
   // change flag value
   isVisible = false;
   setStartQuiz(false);
-  console.log('hidden');
 }
 
   function handleVisibilityChange(forcedFlag) {
@@ -160,11 +151,57 @@ function onHidden() {
     handleVisibilityChange(false);
   }, false);
 
+  // Fetch Data of Class
+  console.log(quizCode);
+  if(quizCode !== undefined && quizCode !== null) {
+    let class_code = quizCode.split("+")[1];
+    setClassCode(class_code);
+    fetchData(class_code).then(data => {
+      if( data !== null) {
+        setQuiz(data.quizzes);
+        let _mcqs = data.quizzes.mcqs;
+        let _questions = data.quizzes.questions;
+        console.log("MCQS", _mcqs);
+        console.log("QUESTIONS", _questions);
+        setQuestions([
+          ..._mcqs,
+          ..._questions
+        ]);
+        setTime(Number(data.quizzes.attempt));
+        console.log("DONE");
+      }
+    });
+  }
 
   }, []);
+
+  function handlePrev(idx) {
+    if(idx > 0) {
+      setCurrentQuestion(idx-1);
+    }
+  }
+
+  function handleNext(idx) {
+    if(idx < questions.length) {
+      setCurrentQuestion(idx+1);
+    }
+  }
+
+  function handleUpdateQuestionMCQ(option) {
+    let updated = [...questions];
+    updated[currentQuestion].current = option;
+    setQuestions(updated);
+  }
+
+  function handleUpdateQuestion(c_answer) {
+    let updated = [...questions];
+    updated[currentQuestion].current = c_answer;
+    setQuestions(updated);
+  }
+
   return (
     <div className="container-fluid pt-5 h-100">
-      <h1 className='text-center pb-5'>Quiz {quizCode}</h1>
+      <h1 className='text-center pb-5'>Quiz {quizCode ? quizCode.split("+")[0] : ""}</h1>
       {
       !startQuiz ? 
       <div className="container">
@@ -195,6 +232,7 @@ function onHidden() {
         </div>
       </div> :
       <div className="container">
+        <h5>Remaining Time: {minutes}:{seconds}</h5>
       <div className="row justify-content-center">
         <div className="col-lg-6">
           <div className="card bg-warning text-white">
@@ -208,25 +246,25 @@ function onHidden() {
                   { questions[currentQuestion].type === 'multiple' ?
                 <div className="form-group">
                   <div className="form-check">
-                      <input className="form-check-input" type="radio" name="choice" id="choice1" value="Paris" />
-                      <label className="form-check-label" for="choice1">{questions[currentQuestion].choices[0]}</label>
+                      <input className="form-check-input" checked={true ? questions[currentQuestion].current == questions[currentQuestion].option1 : false} type="radio" name="choice" id="choice1" onChange={()=>handleUpdateQuestionMCQ(questions[currentQuestion].option1)} value={questions[currentQuestion].option1} />
+                      <label className="form-check-label" for="choice1">{questions[currentQuestion].option1}</label>
                     </div>
                     <div className="form-check">
-                      <input className="form-check-input" type="radio" name="choice" id="choice2" value="London" />
-                      <label className="form-check-label" for="choice2">{questions[currentQuestion].choices[1]}</label>
+                      <input className="form-check-input" checked={true ? questions[currentQuestion].current == questions[currentQuestion].option2 : false} type="radio" name="choice" id="choice2" onChange={()=>handleUpdateQuestionMCQ(questions[currentQuestion].option2)} value={questions[currentQuestion].option2} />
+                      <label className="form-check-label" for="choice2">{questions[currentQuestion].option2}</label>
                     </div>
                     <div className="form-check">
-                      <input className="form-check-input" type="radio" name="choice" id="choice3" value="Rome" />
-                      <label className="form-check-label" for="choice3">{questions[currentQuestion].choices[2]}</label>
+                      <input className="form-check-input" checked={true ? questions[currentQuestion].current == questions[currentQuestion].option3 : false} type="radio" name="choice" onChange={()=>handleUpdateQuestionMCQ(questions[currentQuestion].option3)} id="choice3" value={questions[currentQuestion].option3} />
+                      <label className="form-check-label" for="choice3">{questions[currentQuestion].option3}</label>
                     </div>
                     <div className="form-check">
-                      <input className="form-check-input" type="radio" name="choice" id="choice4" value="Madrid" />
-                      <label className="form-check-label" for="choice4">{questions[currentQuestion].choices[3]}</label>
+                      <input className="form-check-input" checked={true ? questions[currentQuestion].current == questions[currentQuestion].option4 : false} onChange={()=>handleUpdateQuestionMCQ(questions[currentQuestion].option4)} type="radio" name="choice" id="choice4" value={questions[currentQuestion].option4} />
+                      <label className="form-check-label" for="choice4">{questions[currentQuestion].option4}</label>
                     </div>
                 </div>
                     :
                     <div className="form-group w-50">
-                      <textarea class="form-control" rows="5" col="20" id="area"></textarea>
+                      <textarea className="form-control" rows="5" col="20" onChange={(e) => handleUpdateQuestion(e.target.value)} id="area">{questions[currentQuestion].current}</textarea>
                     </div>
                   }
               </div> :
@@ -240,12 +278,12 @@ function onHidden() {
         <div className="row pt-5 pb-5">
           <div className="col-6">
             <div className="text-center">
-              <button className="btn btn-info text-white btn-lg" onClick={()=>{setCurrentQuestion(currentQuestion-1);}}>Prev</button>
+              <button className="btn btn-info text-white btn-lg" onClick={() => handlePrev(currentQuestion)}>Prev</button>
             </div>
           </div>
           <div className="col-6">
             <div className="text-center">
-              <button className="btn btn-success text-white btn-lg" onClick={()=>{setCurrentQuestion(currentQuestion+1);}}>Next</button>
+              <button className="btn btn-success text-white btn-lg" onClick={() => handleNext(currentQuestion)}>Next</button>
             </div>
           </div>
         </div>
@@ -255,5 +293,16 @@ function onHidden() {
   )
 
 }
+
+let fetchData = async (classCode) => {
+  const ref = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
+  const docSnap = await getDoc(ref);
+  if(docSnap.exists()) {
+    let new_classroom = docSnap.data();
+    return new_classroom;
+  }
+  return null;
+}
+
 
 export default Quiz;

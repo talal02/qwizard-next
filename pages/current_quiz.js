@@ -31,7 +31,6 @@ export default function current_quiz(){
             fetchData(classCode).then(data => {
               if(data !== null) {
                 let classRoom = data;
-                console.log(classRoom);
                 classRoom.quizzes = {
                     ...localQuiz, 
                     quizName,
@@ -39,8 +38,9 @@ export default function current_quiz(){
                     totalMarks,
                     duration
                 };
-                console.log("AFTER");
-                console.log(classRoom);
+              const classRef = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
+              setDoc(classRef, classRoom)
+              .then(() => console.log("Classroom Updated!"));
               }
             });
           }
