@@ -31,15 +31,48 @@ export default function current_quiz(){
             fetchData(classCode).then(data => {
               if(data !== null) {
                 let classRoom = data;
+                let _questions = localQuiz.map((question) => {
+                    if(Object.keys(question).length == 4) {
+                        return {
+                            question: question['question'],
+                            answer: question['answer'],
+                            marks: question['marks'],
+                            obtainedMarks: 0,
+                            type: "short",
+                            current: ""
+                        }
+                    } 
+                });
+                let mcqs = localQuiz.map((question) => {
+                    if(Object.keys(question).length > 4) {
+                        return {
+                            question: question['question'],
+                            option1: question['option1'],
+                            option2: question['option2'],
+                            option3: question['option3'],
+                            option4: question['option4'],
+                            answer: question['answer'],
+                            marks: question['marks'],
+                            obtainedMarks: 0,
+                            type: "multiple"
+                        }
+                    }
+                });
+                mcqs = mcqs.filter((question) => question !== undefined);
+                _questions = _questions.filter((question) => question !== undefined);
+                console.log("MCQS", mcqs);
+                console.log("Questions", _questions);
                 classRoom.quizzes = {
-                    ...localQuiz, 
+                    mcqs,
+                    questions: _questions,
                     quizName,
                     validTill,
                     totalMarks,
-                    duration
+                    attempt: duration
                 };
-              const classRef = doc(db, 'classrooms', classCode).withConverter(classroomConverter);
-              setDoc(classRef, classRoom)
+              const classRef = doc(db, 'classrooms', classCode);
+              const {...classinit} = classRoom;
+              setDoc(classRef, classinit)
               .then(() => console.log("Classroom Updated!"));
               }
             });

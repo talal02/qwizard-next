@@ -29,9 +29,6 @@ function Classroom() {
             setAnnouncements(data.announcements);
             const currentDate = new Date();
             const timestamp = currentDate.getTime();
-            if(data.quizzes && data.quizzes.validTill) {
-              data.quizzes.validTill = data.quizzes.validTill.toDate().getTime();
-            }
             if(data.quizzes && (data.quizzes.validTill > timestamp)) {
               setQuiz(data.quizzes);
             } else {
