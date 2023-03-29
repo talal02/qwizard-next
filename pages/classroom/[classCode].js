@@ -141,10 +141,10 @@ function Classroom() {
                 <div className="col-12 col-md-8 mx-auto p-4">
                     {
                       quiz !== null && <div className='container rounded bg-primary text-white text-center p-3 mb-3'>
-                        <h5>{quiz.name} is Available!</h5>
+                        <h5>{quiz.quizName} is Available!</h5>
                         <h5>Total Marks: {quiz.total_marks}</h5>
                         <h5>Time to attempt: {quiz.attempt} mins</h5>
-                        <Link href={`/quiz/${quiz.name}+${classCode}`}>
+                        <Link href={`/quiz/${quiz.quizName}+${classCode}`}>
                           <span className='btn btn-sm bg-warning text-white'>Start Quiz</span>
                         </Link>
                       </div>
