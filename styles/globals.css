@@ -80,6 +80,17 @@ a {
   font-size: xx-large;
 }
 
+.custom-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.custom-link:hover {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 .btn-legendary:hover {
   background-color: #FFF;
   color: #fba118;
@@ -174,6 +185,11 @@ textarea.input1 {
   color: #000;
   border: none;
 }
+
+textarea.input1:focus {
+  outline: none;
+}
+
 textarea.input1+.shadow-input1 {
   border-radius: 25px;
 }
@@ -251,4 +267,8 @@ textarea.input1+.shadow-input1 {
 
 .bs-icon.bs-icon-circle {
   border-radius: 50%;
+}
+
+.main-class-area {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
