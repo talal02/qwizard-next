@@ -25,7 +25,6 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;800&display=swap"
           rel="stylesheet"
         />
-        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
       </Head>
       <body>
         <Main />
