@@ -49,7 +49,7 @@ function classdesign() {
               height={100}
             />
           </div>
-
+{/* This is a comment */}
           <div className="col-xs-6 col-sm-3 col-md-2 d-flex align-items-center">
             <Image
               src={user.photoURL}
