@@ -266,10 +266,10 @@ function Quiz() {
           </div>
         </div>
       ) : (
-        <div className="container">
-          <h5>
+        <div className="container main-class-area">
+          <h3 className="text-center p-5">
             Remaining Time: {minutes}:{seconds}
-          </h5>
+          </h3>
           <div className="row justify-content-center">
             <div className="col-lg-6">
               <div className="card bg-warning text-white">

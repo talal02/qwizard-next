@@ -12,6 +12,7 @@ export default function current_quiz() {
   const [totalMarks, setTotalMarks] = useState(0);
   const [duration, setDuration] = useState(0);
   const [localQuiz, setLocalQuiz] = useState(null);
+  const [topic, setTopic] = useState("");
   const router = useRouter();
   const { classCode } = router.query;
 
@@ -70,6 +71,7 @@ export default function current_quiz() {
             quizName,
             validTill,
             totalMarks,
+            topic,
             attempt: duration,
           };
           const classRef = doc(db, "classrooms", classCode);
@@ -83,9 +85,11 @@ export default function current_quiz() {
   };
 
   return (
-    <div>
+    <div className="m-5 p-5 main-class-area">
+      <h3 className="text-center">Current Quiz</h3>
+      <hr className="my-2"></hr>
       {
-        <div>
+        <div className="container">
           {current_quiz.map((question, idx) => {
             if (Object.keys(question).length == 4) {
               return (
@@ -269,9 +273,9 @@ export default function current_quiz() {
           })}
         </div>
       }
-      <div className="container">
+      <div className="container mt-5 text-center">
         <div className="form-group">
-          <label for="quizName">Quiz Name:</label>
+          <label style={{fontSize: 'large'}} for="quizName">Quiz Name</label>
           <input
             type="text"
             className="form-control"
@@ -280,7 +284,7 @@ export default function current_quiz() {
           />
         </div>
         <div className="form-group">
-          <label for="validTill">Valid Till:</label>
+          <label style={{fontSize: 'large'}} for="validTill">Valid Till</label>
           <input
             type="datetime-local"
             className="form-control"
@@ -291,7 +295,7 @@ export default function current_quiz() {
           />
         </div>
         <div className="form-group">
-          <label for="duration">Duration (In Minutes):</label>
+          <label style={{fontSize: 'large'}} for="duration">Duration (In Minutes)</label>
           <input
             type="number"
             className="form-control"
@@ -299,10 +303,18 @@ export default function current_quiz() {
             placeholder="Duration (In Minutes)"
           />
         </div>
+        <div className="form-group">
+          <label style={{fontSize: 'large'}} for="topic">Topic</label>
+          <input
+            type="text"
+            className="form-control"
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Topic"
+          />
+        </div>
         {current_quiz.length > 0 && (
           <div className="form-group">
-            <label>Total Marks: </label>
-            <label> {totalMarks}</label>
+            <h4>Total Marks are {totalMarks}</h4>
           </div>
         )}
         <button onClick={setQuiz} className="btn btn-primary">

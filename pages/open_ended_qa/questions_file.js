@@ -42,7 +42,7 @@ export default function Questions_File(props) {
       question_arr.push(
         <div
           className="container"
-          key={`cquestion-${idx}`}
+          key={`cquestion-${index}`}
           style={{ fontSize: "120%", marginTop: "4%" }}
         >
           <div className="row">
