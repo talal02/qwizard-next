@@ -45,7 +45,6 @@ function Classroom() {
                   if(temp[i].id === data.quizzes.quizName && temp[i].userEmail == user.email) {
                     setDisplayQuiz(false);
                   }
-                  // temp[i].id not in unique then push
                   if(unique.indexOf(temp[i].id) === -1) {
                     unique.push(temp[i].id);
                   }
