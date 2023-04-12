@@ -71,6 +71,8 @@ function Quiz() {
           userEmail: user.email,
           questions: questions,
         }
+        console.log("DATA", data);
+        console.log("QUESTION TO UPLOAD", question_to_upload);
         data.attemptedQuizzes.push(question_to_upload);
         setDoc(classRef, data).then(() => console.log("data pushed"));
         toast("🦄 Your Quiz Has Been Submitted!!!", {
@@ -78,6 +80,7 @@ function Quiz() {
           autoClose: 2000,
           type: "info",
         });
+        console.log("WTF");
         router.push("/classroom/" + classCode);
       });
     }
