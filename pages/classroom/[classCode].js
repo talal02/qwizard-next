@@ -23,6 +23,7 @@ function Classroom() {
   const [showClassQuizzes, setShowClassQuizzes] = useState(false);
   const [uniqueQuizzes, setUniqueQuizzes] = useState([]);
   const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
+  const [studentAttempted, setStudentAttempted] = useState(null);
 
   useEffect(() => {
     let componentMounted = true;
@@ -49,6 +50,10 @@ function Classroom() {
                     unique.push(temp[i].id);
                   }
                 }
+                unique.push("A");
+                unique.push("B");
+                unique.push("C");
+                setUniqueQuizzes(unique);
                 if(user.email === data.teacher_email)  {
                   setDisplayQuiz(false);
                 }
@@ -110,6 +115,19 @@ function Classroom() {
     } else {
     }
   }, [user]);
+
+  const selectQuiz = (e) => {
+    setCurrentShowQuiz(e.target.value); 
+    if(user && attemptedQuizzes !== undefined) {
+      var attempted = [];
+      for(let i = 0; i < attemptedQuizzes.length; i++) {
+          if(attemptedQuizzes[i].id == e.target.value) {
+            attempted.push(attemptedQuizzes[i]);
+          }
+      }
+      setStudentAttempted(attempted);
+    }
+  }
 
   if (user) {
     return (
@@ -277,13 +295,21 @@ function Classroom() {
                     showClassQuizzes && (
                       <div>
                         <h3 className="text-center">Quizzes</h3>
-                        <select className="form-control" onChange={(e) => {setCurrentShowQuiz(e.target.value); console.log(e.target.value)}}>
+                        <select className="form-control" onChange={selectQuiz}>
                           {uniqueQuizzes.map((option,idx) => (
                             <option key={`option-${idx}`} value={option}>
                               {option}
                             </option>
                           ))}
                         </select>
+                        <hr></hr>
+                        {
+                          studentAttempted && studentAttempted.map((attempt,idx) => (
+                            <div key={`attempt-${idx}`} className="container rounded bg-primary text-white text-center p-3 mb-3">
+                              <h5>{attempt.userEmail}</h5>
+                            </div>
+                          ))
+                        }
                       </div>
                     )
                   }
