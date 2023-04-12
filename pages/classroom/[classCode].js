@@ -38,19 +38,23 @@ function Classroom() {
             setQuiz(data.quizzes);
             const temp = data.attemptedQuizzes;
             console.log(data, "MYDATA")
-            if(user && temp !== undefined) {
-              var unique = [];
-              for(let i = 0; i < temp.length; i++) {
-                if(temp[i].id === data.quizzes.quizName && temp[i].userEmail == user.email) {
+            if(user) {
+              if(temp !== undefined) {
+                var unique = [];
+                for(let i = 0; i < temp.length; i++) {
+                  if(temp[i].id === data.quizzes.quizName && temp[i].userEmail == user.email) {
+                    setDisplayQuiz(false);
+                  }
+                  // temp[i].id not in unique then push
+                  if(unique.indexOf(temp[i].id) === -1) {
+                    unique.push(temp[i].id);
+                  }
+                }
+                if(user.email === data.teacher_email)  {
                   setDisplayQuiz(false);
                 }
-                // temp[i].id not in unique then push
-                if(unique.indexOf(temp[i].id) === -1) {
-                  unique.push(temp[i].id);
-                }
-              }
-              if(user.email === data.teacher_email)  {
-                setDisplayQuiz(false);
+              } else {
+                setDisplayQuiz(true);
               }
             } else {
               setDisplayQuiz(false);
