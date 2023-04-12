@@ -3,19 +3,22 @@ import { useEffect, useState } from "react";
 import { db, auth } from "../../lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { classroomConverter } from "../../components/Classroom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { toast } from "react-toastify";
 
 function Quiz() {
+  const [user, setUser] = useAuthState(auth);
   const router = useRouter();
   const { quizCode } = router.query;
   const [startQuiz, setStartQuiz] = useState(false);
   const [questions, setQuestions] = useState(null);
-  const [attempted, setAttempted] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [classCode, setClassCode] = useState(null);
   const [quiz, setQuiz] = useState(null);
   const [time, setTime] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [sessionStarted, setSessionStarted] = useState(false);
 
   function maximizeScreen() {
     if (document.documentElement.requestFullscreen) {
@@ -44,6 +47,7 @@ function Quiz() {
   useEffect(() => {
     if (minutes === 0 && seconds === 0) {
       setStartQuiz(false);
+      setSessionStarted(true);
     }
   }, [minutes, seconds]);
 
@@ -57,16 +61,42 @@ function Quiz() {
   }, [startQuiz]);
 
   useEffect(() => {
+    if(sessionStarted && !startQuiz) {
+      fetchData(classCode).then((data) => {
+        const classRef = doc(db, "classrooms", classCode).withConverter(
+          classroomConverter
+        );
+        var question_to_upload = {
+          id: quizCode.split("+")[0],
+          userEmail: user.email,
+          questions: questions,
+        }
+        data.attemptedQuizzes.push(question_to_upload);
+        setDoc(classRef, data).then(() => console.log("data pushed"));
+        toast("🦄 Your Quiz Has Been Submitted!!!", {
+          hideProgressBar: false,
+          autoClose: 2000,
+          type: "info",
+        });
+        router.push("/classroom/" + classCode);
+      });
+    }
+  }, [startQuiz]);
+
+  useEffect(() => {
     window.addEventListener("blur", () => {
       if (startQuiz) {
         setStartQuiz(false);
+        setSessionStarted(true);
       }
     });
     document.addEventListener("fullscreenchange", () => {
       if (!document.fullscreenElement) {
         setStartQuiz(false);
+        setSessionStarted(true);
       }
     });
+
 
     var browserPrefixes = ["moz", "ms", "o", "webkit"],
       isVisible = true; // internal flag, defaults to true
@@ -117,6 +147,7 @@ function Quiz() {
       // change flag value
       isVisible = false;
       setStartQuiz(false);
+      setSessionStarted(true);
     }
 
     function handleVisibilityChange(forcedFlag) {
@@ -276,8 +307,8 @@ function Quiz() {
                 <div className="card-header text-center">
                   <h5>Quiz Question</h5>
                 </div>
-                {(currentQuestion < questions.length) &
-                (currentQuestion > -1) ? (
+                {(questions != null && (currentQuestion < questions.length) &&
+                (currentQuestion > -1)) ? (
                   <div className="card-body d-flex flex-column align-items-center">
                     <h4 className="card-text text-center pb-3 pt-3">
                       {questions[currentQuestion].question}

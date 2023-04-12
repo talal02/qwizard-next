@@ -8,7 +8,8 @@ class Classroom {
     type,
     semester,
     announcements,
-    students
+    students, 
+    attemptedQuizzes
   ) {
     this.quizzes = quizzes;
     this.name = name;
@@ -19,6 +20,7 @@ class Classroom {
     this.announcements = announcements;
     this.type = type;
     this.semester = semester;
+    this.attemptedQuizzes = attemptedQuizzes;
   }
 }
 
@@ -35,6 +37,7 @@ export const classroomConverter = {
       type: classroom.type,
       semester: classroom.semester,
       quizzes: classroom.quizzes,
+      attemptedQuizzes: classroom.attemptedQuizzes,
     };
   },
   fromFirestore: function (snapshot, options) {
@@ -48,7 +51,8 @@ export const classroomConverter = {
       data.type,
       data.semester,
       data.announcements,
-      data.students
+      data.students,
+      data.attemptedQuizzes
     );
   },
 };

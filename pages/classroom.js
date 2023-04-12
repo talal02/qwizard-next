@@ -36,6 +36,7 @@ function Classrooms() {
           classType,
           classSemester,
           [],
+          [],
           []
         );
         try {

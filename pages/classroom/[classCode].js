@@ -18,6 +18,11 @@ function Classroom() {
   const [classroom, setClassroom] = useState(null);
   const [quiz, setQuiz] = useState({});
   const [loading, setLoading] = useState(true);
+  const [attemptedQuizzes, setAttemptedQuizzes] = useState([]);
+  const [displayQuiz, setDisplayQuiz] = useState(true);
+  const [showClassQuizzes, setShowClassQuizzes] = useState(false);
+  const [uniqueQuizzes, setUniqueQuizzes] = useState([]);
+  const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
 
   useEffect(() => {
     let componentMounted = true;
@@ -26,10 +31,30 @@ function Classroom() {
         if (componentMounted && data !== null) {
           setClassroom(data);
           setAnnouncements(data.announcements);
+          setAttemptedQuizzes(data.attemptedQuizzes);
           const currentDate = new Date();
           const timestamp = currentDate.getTime();
           if (data.quizzes && data.quizzes.validTill > timestamp) {
             setQuiz(data.quizzes);
+            const temp = data.attemptedQuizzes;
+            console.log(data, "MYDATA")
+            if(user && temp !== undefined) {
+              var unique = [];
+              for(let i = 0; i < temp.length; i++) {
+                if(temp[i].id === data.quizzes.quizName && temp[i].userEmail == user.email) {
+                  setDisplayQuiz(false);
+                }
+                // temp[i].id not in unique then push
+                if(unique.indexOf(temp[i].id) === -1) {
+                  unique.push(temp[i].id);
+                }
+              }
+              if(user.email === data.teacher_email)  {
+                setDisplayQuiz(false);
+              }
+            } else {
+              setDisplayQuiz(false);
+            }            
           } else {
             setQuiz(null);
           }
@@ -162,11 +187,18 @@ function Classroom() {
                         </Link>
                       </div>
                     </div>
-                    <div className="col-12 col-md-12">
+                    <div className="col-12 col-md-6">
                       <div className="btn bg-custom text-white btn-block mt-3">
                         <Link href={`/current_quiz?classCode=${classCode}`}>
                           <a className="custom-link">Compiled Quiz So Far</a>
                         </Link>
+                      </div>
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <div className="btn bg-custom text-white btn-block mt-3">
+                        <a onClick={() => setShowClassQuizzes(!showClassQuizzes)} className="custom-link">
+                          Quizzes
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -176,7 +208,10 @@ function Classroom() {
             <div className="container">
               <div className="row">
                 <div className="main-class-area mt-3 col-12 col-md-10 mx-auto p-4">
-                  {classroom.teacher_email == user.email && (
+                  {
+                    !showClassQuizzes && (
+                      <div>
+                        {classroom.teacher_email == user.email && (
                     <div>
                       <h3 className="text-center">Post Announcement</h3>
                       <hr></hr>
@@ -203,7 +238,7 @@ function Classroom() {
                     </div>
                   )}
                   {quiz !== null &&
-                    /*classroom.teacher_email != user.email*/ true && (
+                    displayQuiz && (
                       <div>
                         <h3 className="text-center">Quiz</h3>
                         <hr></hr>
@@ -232,6 +267,23 @@ function Classroom() {
                       ))}
                     </div>
                   )}
+                      </div>
+                    )
+                  }
+                  {
+                    showClassQuizzes && (
+                      <div>
+                        <h3 className="text-center">Quizzes</h3>
+                        <select className="form-control" onChange={(e) => {setCurrentShowQuiz(e.target.value); console.log(e.target.value)}}>
+                          {uniqueQuizzes.map((option,idx) => (
+                            <option key={`option-${idx}`} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )
+                  }
                 </div>
               </div>
             </div>

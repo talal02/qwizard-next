@@ -20,11 +20,11 @@ export default function current_quiz() {
 
   useEffect(() => {
     if (current_quiz.length > 0) {
-      setTotalMarks(
-        current_quiz.reduce(
-          (acc, curr) => Number(acc.marks) + Number(curr.marks)
-        )
-      );
+      var marks = 0;
+      current_quiz.forEach((question) => {
+        marks += Number(question.marks);
+      });
+      setTotalMarks(marks);
       setLocalQuiz(current_quiz.map((question) => question));
     }
   }, [current_quiz]);
