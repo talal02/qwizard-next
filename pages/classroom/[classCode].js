@@ -301,7 +301,7 @@ function Classroom() {
                     showClassQuizzes && (
                       <div>
                         <h3 className="text-center">Quizzes</h3>
-                        <select className="form-control" onChange={selectQuiz}>
+                        <select className="form-control" onChange={selectQuiz} onClick={selectQuiz}>
                           {uniqueQuizzes.map((option,idx) => (
                             <option key={`option-${idx}`} value={option}>
                               {option}
