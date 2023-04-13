@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { db, auth } from "../lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { classroomConverter } from "../components/Classroom";
+import { toast } from "react-toastify";
+
 
 export default function current_quiz() {
   const [quizName, setQuizName] = useState("");
@@ -19,6 +21,10 @@ export default function current_quiz() {
   let current_quiz = useRecoilValue(quiz_atom);
 
   useEffect(() => {
+    console.log(typeof current_quiz);
+  }, [current_quiz]);
+
+  useEffect(() => {
     if (current_quiz.length > 0) {
       var marks = 0;
       current_quiz.forEach((question) => {
@@ -30,6 +36,14 @@ export default function current_quiz() {
   }, [current_quiz]);
 
   const setQuiz = () => {
+    if(quizName == "" || validTill == null || duration == 0 || topic == ""){
+      toast("🦄 Make Sure to Enter All Fields!!!", {
+        hideProgressBar: false,
+        autoClose: 2000,
+        type: "warning",
+      });
+      return;
+    }
     if (classCode != null) {
       fetchData(classCode).then((data) => {
         if (data !== null) {

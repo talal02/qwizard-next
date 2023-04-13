@@ -428,7 +428,7 @@ function Quiz() {
                   </div>
                 ) : (
                   <h3 className="pt-5 pb-5 text-center">
-                    <button className="btn btn-info btn-lg text-white">
+                    <button onClick={() => {setStartQuiz(false); setSessionStarted(true);}} className="btn btn-info btn-lg text-white">
                       SUBMIT
                     </button>
                   </h3>
