@@ -24,10 +24,12 @@ function Classroom() {
   const [uniqueQuizzes, setUniqueQuizzes] = useState([]);
   const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
   const [studentAttempted, setStudentAttempted] = useState(null);
+  const [showAttempted, setShowAttempted] = useState(false);
 
   useEffect(() => {
     let componentMounted = true;
     if (classCode != null) {
+      console.log(classCode, "<-")
       fetchData(classCode).then((data) => {
         if (componentMounted && data !== null) {
           setClassroom(data);
@@ -115,6 +117,10 @@ function Classroom() {
     } else {
     }
   }, [user]);
+
+  useEffect(() => {
+
+  }, [showAttempted])
 
   const selectQuiz = (e) => {
     setCurrentShowQuiz(e.target.value); 
@@ -303,10 +309,43 @@ function Classroom() {
                           ))}
                         </select>
                         <hr></hr>
+                        {/* I, Ahmed, made changes here (below) in order to display the attempted quiz */}
                         {
                           studentAttempted && studentAttempted.map((attempt,idx) => (
-                            <div key={`attempt-${idx}`} className="container rounded bg-primary text-white text-center p-3 mb-3">
+                            <div key={`attempt-${idx}`} className="container rounded bg-primary text-white text-center p-3 mb-3" onClick={
+                              () => {
+                                if(showAttempted === true){
+                                  setShowAttempted(false)
+                                }
+                                else{
+                                  setShowAttempted(true)
+                                }
+                              }
+                            }>
                               <h5>{attempt.userEmail}</h5>
+                              {showAttempted ? (
+                                <div className="card">
+                                 {attempt.questions.map((q) => {
+                                    return(
+                                      <>
+                                  
+                                        <div className="card-body">
+                                          <div className="row">
+                                            <div className="col-4" style={{ color: 'orange', border: "1px solid orange" }}><b>Question: </b> </div>
+                                            <div className="col-8" style={{ color: 'orange',border: "1px solid orange", fontWeight:"600"}}>{q.question} </div>
+                                            <div className="col-4" style={{ color: 'orange',border: "1px solid orange" }}><b>Attempted Answer: </b> </div>
+                                            <div className="col-8" style={{ color: 'orange',border: "1px solid orange",fontWeight:"600" }}>{q.current} </div>
+                                            <div className="col-4" style={{ color: 'orange',border: "1px solid orange" }}><b>Marks Obtained:</b> </div>
+                                            <div className="col-8" style={{ color: 'orange',border: "1px solid orange",fontWeight:"600" }}>{q.obtainedMarks} </div>
+                                           
+                                          </div>
+                                        </div>
+                                       
+                                      </>)
+                                 })}
+                                </div>
+                              ) : null}
+                               {/* I, Ahmeds, changes end here */}
                             </div>
                           ))
                         }
