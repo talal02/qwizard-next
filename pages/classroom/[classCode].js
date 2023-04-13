@@ -52,9 +52,9 @@ function Classroom() {
                     unique.push(temp[i].id);
                   }
                 }
-                unique.push("A");
-                unique.push("B");
-                unique.push("C");
+                // unique.push("A");
+                // unique.push("B");
+                // unique.push("C");
                 setUniqueQuizzes(unique);
                 if(user.email === data.teacher_email)  {
                   setDisplayQuiz(false);
