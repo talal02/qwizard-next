@@ -239,7 +239,20 @@ textarea.input1+.shadow-input1 {
   cursor: pointer;
   font-size: xx-large;
 }
+.floating-right-bottom-btn-new {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: xx-large;
+  border: 2px solid black;
+  border-radius: 4px;
+}
 
+.floating-right-bottom-btn-new:hover{
+  background-color: rgb(45, 91, 219);
+  color: #fba118;
+  border: 2px solid white;
+}
 .bs-icon {
   --bs-icon-size: .75rem;
   display: flex;
