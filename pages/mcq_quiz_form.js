@@ -10,6 +10,7 @@ export default function MCQ_Quiz_form() {
   const url = process.env.NEXT_PUBLIC_API_URL;
   const [passage, setPassage] = useState("");
   const [generate, setGenerate] = useState(false);
+  const [progressBar, setProgressBar] = useState(0);
   const router = useRouter();
   const { classCode } = router.query;
 
@@ -20,9 +21,17 @@ export default function MCQ_Quiz_form() {
     data.append("uploaded_file", event.target.files[0]);
     var response = {};
     if (event.target.files[0].type == "application/pdf") {
-      response = await axios.post(url + "read_PDF", data);
+      response = await axios.post(url + "read_PDF", data, {
+        onUploadProgress: (ProgressEvent) => {
+          setProgressBar(Math.round((ProgressEvent.loaded / ProgressEvent.total) * 100));
+        }
+      });
     } else {
-      response = await axios.post(url + "read_DOCX", data);
+      response = await axios.post(url + "read_DOCX", data, {
+        onUploadProgress: (ProgressEvent) => {
+          setProgressBar(Math.round((ProgressEvent.loaded / ProgressEvent.total) * 100));
+        }
+      });
     }
     setPassage(response.data);
     setGenerate(false);
