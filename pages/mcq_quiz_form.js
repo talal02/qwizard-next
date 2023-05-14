@@ -21,17 +21,9 @@ export default function MCQ_Quiz_form() {
     data.append("uploaded_file", event.target.files[0]);
     var response = {};
     if (event.target.files[0].type == "application/pdf") {
-      response = await axios.post(url + "read_PDF", data, {
-        onUploadProgress: (ProgressEvent) => {
-          setProgressBar(Math.round((ProgressEvent.loaded / ProgressEvent.total) * 100));
-        }
-      });
+      response = await axios.post(url + "read_PDF", data);
     } else {
-      response = await axios.post(url + "read_DOCX", data, {
-        onUploadProgress: (ProgressEvent) => {
-          setProgressBar(Math.round((ProgressEvent.loaded / ProgressEvent.total) * 100));
-        }
-      });
+      response = await axios.post(url + "read_DOCX", data);
     }
     setPassage(response.data);
     setGenerate(false);
