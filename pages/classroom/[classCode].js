@@ -1,13 +1,17 @@
+import axios from "axios";
+import { BallTriangle } from "react-loader-spinner";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { db, auth } from "../../lib/firebase";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import AnnouncementMain from "../../components/AnnouncementMain";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { classroomConverter } from "../../components/Classroom";
 import Link from "next/link";
+
 import Announcement from "../../components/Announcement";
+import { setLazyProp } from "next/dist/server/api-utils";
 
 function Classroom() {
   const [user, setUser] = useAuthState(auth);
@@ -25,6 +29,8 @@ function Classroom() {
   const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
   const [studentAttempted, setStudentAttempted] = useState(null);
   const [showAttempted, setShowAttempted] = useState(false);
+  const [marks, setMarks] = useState(false);
+  const [loadmarks, setLoadmarks] = useState(false)
 
   useEffect(() => {
     let componentMounted = true;
@@ -122,6 +128,11 @@ function Classroom() {
 
   }, [showAttempted])
 
+  
+  // useEffect(() => {
+  // }, [marks])
+
+    
   const selectQuiz = (e) => {
     setCurrentShowQuiz(e.target.value); 
     if(user && attemptedQuizzes !== undefined) {
@@ -312,41 +323,96 @@ function Classroom() {
                         {/* I, Ahmed, made changes here (below) in order to display the attempted quiz */}
                         {
                           studentAttempted && studentAttempted.map((attempt,idx) => (
+                            <>
                             <div key={`attempt-${idx}`} className="container rounded bg-primary text-white text-center p-3 mb-3" onClick={
                               () => {
-                                if(showAttempted === true){
-                                  setShowAttempted(false)
+                                // if (mark == true){
+                                //   setShowAttempted(true)
+                                // }
+                                // if(mark !== true){
+                                    if(showAttempted === true){
+                                      setShowAttempted(false)
+                                    }
+                                    else{
+                                      setShowAttempted(true)
+                                    // }
                                 }
-                                else{
-                                  setShowAttempted(true)
-                                }
+
                               }
                             }>
                               <h5>{attempt.userEmail}</h5>
                               {showAttempted ? (
                                 <div className="card">
-                                 {attempt.questions.map((q) => {
+                                 {attempt.questions.map((q, index) => {
                                     return(
-                                      <>
-                                  
+                                      <>         
                                         <div className="card-body">
                                           <div className="row">
                                             <div className="col-4" style={{ color: 'orange', border: "1px solid orange" }}><b>Question: </b> </div>
                                             <div className="col-8" style={{ color: 'orange',border: "1px solid orange", fontWeight:"600"}}>{q.question} </div>
-                                            <div className="col-4" style={{ color: 'orange',border: "1px solid orange" }}><b>Attempted Answer: </b> </div>
-                                            <div className="col-8" style={{ color: 'orange',border: "1px solid orange",fontWeight:"600" }}>{q.current} </div>
-                                            <div className="col-4" style={{ color: 'orange',border: "1px solid orange" }}><b>Marks Obtained:</b> </div>
-                                            <div className="col-8" style={{ color: 'orange',border: "1px solid orange",fontWeight:"600" }}>{q.obtainedMarks} </div>
-                                           
+                                            <div className="col-4" style={{ color: 'green',border: "1px solid orange" }}><b>Correct Answer: </b> </div>
+                                            <div className="col-8" style={{ color: 'green',border: "1px solid orange",fontWeight:"600" }}>{q.answer} </div>
+                                            <div className="col-4" style={{ color: 'black',border: "1px solid orange" }}><b>Attempted Answer: </b> </div>
+                                            <div className="col-8" style={{ color: 'black',border: "1px solid orange",fontWeight:"600" }}>{q.current} </div>
+                                            <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Total Marks:</b> </div>
+                                            <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{q.marks} </div>
+                                            <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Marks Obtained:</b> </div>
+                                            <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{marks ? marks[index]*Number(q.marks):q.obtainedMarks } </div>
                                           </div>
                                         </div>
-                                       
                                       </>)
-                                 })}
+                                  })}
                                 </div>
                               ) : null}
+
+
                                {/* I, Ahmeds, changes end here */}
                             </div>
+                            
+                                {showAttempted ? (
+                                  <div style={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+                                      {loadmarks ? 
+                                      (<BallTriangle
+                                        height={50}
+                                        width={50}
+                                        radius={5}
+                                        color="#fba121"
+                                        ariaLabel="ball-triangle-loading"
+                                        wrapperClass={{}}
+                                        wrapperStyle=""
+                                        visible={true}
+                                      />):null}
+
+                                      <button className="floating-right-bottom-btn-new" disabled={loadmarks} onClick={() => {
+                                        setLoadmarks(true);
+                                        const targets_and_attempts = attempt.questions.map((question) => ({
+                                          target: question.answer,
+                                          attempt: question.current,
+                                        }));
+                                        axios.post("http://localhost:8080/evaluate_ans", {
+                                          answers: targets_and_attempts
+                                        }).then(res => {updateObtainedMarks(classCode, attempt.userEmail,res.data)
+                                        setMarks(res.data.marks)}                               
+                                        ).catch(err => console.log('ERR! ', err)).finally(() => setLoadmarks(false));
+                                      }
+                                    }
+                            > &#9889; Auto-Mark Quiz  &#9757;
+                            </button>
+                            {loadmarks ? 
+                            (<BallTriangle
+                              height={50}
+                              width={50}
+                              radius={5}
+                              color="#fba118"
+                              ariaLabel="ball-triangle-loading"
+                              wrapperClass={{}}
+                              wrapperStyle=""
+                              visible={true}
+                            />):null}
+                            </div>
+                           ): null} 
+          
+                           </>
                           ))
                         }
                       </div>
@@ -375,4 +441,29 @@ let fetchData = async (classCode) => {
   return null;
 };
 
+let updateObtainedMarks = async (classCode, user, marks) => {
+  let classroomRef = doc(db, "classrooms", classCode);
+  let classroomSnapshot = await getDoc(classroomRef);
+  if (classroomSnapshot.exists()) {
+    let classroomData = classroomSnapshot.data();
+    //let attempted_quiz = classroomData.attemptedQuizzes.find((q) => q.userEmail === user);
+    let index = classroomData.attemptedQuizzes.findIndex(quiz => quiz.userEmail === user);
+    let attempted_quiz = classroomData.attemptedQuizzes[index];
+    console.log(attempted_quiz)
+    let questions = attempted_quiz.questions;
+    console.log(questions)
+    console.log("marks", marks)
+    for (let i = 0; i < questions.length; i++) {
+      let question = questions[i];
+      question.obtainedMarks = (marks.marks[i] * Number(question.marks));
+      console.log(question.obtainedMarks);
+    }
+    await updateDoc(classroomRef, {
+      attemptedQuizzes: classroomData.attemptedQuizzes
+    });  
+  }
+}
+
+
 export default Classroom;
+
