@@ -7,6 +7,7 @@ import axios from "axios";
 import Questions_Text from "./open_ended_qa/questions_text";
 import Questions_File from "./open_ended_qa/questions_file";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 export default function Quiz_form() {
   const url = process.env.NEXT_PUBLIC_API_URL;
@@ -22,7 +23,12 @@ export default function Quiz_form() {
     // setFile(event.target.files[0])
     // console.log(event.target.files[0])
     const data = new FormData();
+    if(event.target.files[0].size > 5000000){
+      toast("File size should be less than 5 MB", {type: "error"});
+      return;
+    }
     data.append("uploaded_file", event.target.files[0]);
+
     var response = {};
     if (event.target.files[0].type == "application/pdf") {
       response = await axios.post(url + "read_PDF", data);
@@ -43,7 +49,7 @@ export default function Quiz_form() {
         <div className="row mb-3 justify-content-space-between">
           <div className="col-10">
             {/* <small><span style={{'color':'orange'}}>paste a sample text to generate questions</span></small> */}
-            <h3 class>Generate Short Answer Questions</h3>
+            <h3>Generate Short Answer Questions</h3>
           </div>
           <div className="col-2">
             <button type="button" className="btn btn-orange">

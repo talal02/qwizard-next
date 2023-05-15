@@ -10,6 +10,7 @@ export default function MCQ_Quiz_form() {
   const url = process.env.NEXT_PUBLIC_API_URL;
   const [passage, setPassage] = useState("");
   const [generate, setGenerate] = useState(false);
+  const [progressBar, setProgressBar] = useState(0);
   const router = useRouter();
   const { classCode } = router.query;
 

@@ -58,9 +58,9 @@ function Classroom() {
                     unique.push(temp[i].id);
                   }
                 }
-                unique.push("A");
-                unique.push("B");
-                unique.push("C");
+                // unique.push("A");
+                // unique.push("B");
+                // unique.push("C");
                 setUniqueQuizzes(unique);
                 if(user.email === data.teacher_email)  {
                   setDisplayQuiz(false);
@@ -312,7 +312,7 @@ function Classroom() {
                     showClassQuizzes && (
                       <div>
                         <h3 className="text-center">Quizzes</h3>
-                        <select className="form-control" onChange={selectQuiz}>
+                        <select className="form-control" onChange={selectQuiz} onClick={selectQuiz}>
                           {uniqueQuizzes.map((option,idx) => (
                             <option key={`option-${idx}`} value={option}>
                               {option}

@@ -3,10 +3,11 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../lib/firebase";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { userConverter } from "../components/User";
 import ClassroomMain from "../components/classroomMain";
 import Classroom, { classroomConverter } from "../components/Classroom";
+import { toast } from "react-toastify";
 
 function Classrooms() {
   const [user, setUser] = useAuthState(auth);
@@ -23,40 +24,58 @@ function Classrooms() {
     try {
       const ref = doc(db, "users", user.email).withConverter(userConverter);
       const docSnap = await getDoc(ref);
-      if (docSnap.exists()) {
-        let new_user = docSnap.data();
-        new_user.classrooms.push(classCode);
-        // quizzes, name, teacher_name, teacher_email, code, type, semester, announcements, students
-        let new_classroom = new Classroom(
-          {},
-          className,
-          new_user.name,
-          new_user.email,
-          classCode,
-          classType,
-          classSemester,
-          [],
-          [],
-          []
-        );
-        try {
-          let classRef = doc(db, "classrooms", classCode).withConverter(
-            classroomConverter
-          );
-          console.log("CLASS REF", classRef);
-          await setDoc(classRef, new_classroom);
-          try {
-            await setDoc(ref, new_user);
-          } catch (error) {
-            console.log("Error Setting New User");
+
+      getDocs(collection(db, "classrooms")).then((querySnapshot) => {
+        var found = false;
+        querySnapshot.docs.forEach((doc) => {
+          if(doc.id == classCode) {
+            toast("🦄 Classroom Already Exists!!!", {
+              hideProgressBar: false,
+              autoClose: 2000,
+              type: "info",
+            });
+            found = true;
           }
-        } catch (error) {
-          console.log("Error adding class", error);
+        })
+        if (docSnap.exists() && !found) {
+          let new_user = docSnap.data();
+          new_user.classrooms.push(classCode);
+          // quizzes, name, teacher_name, teacher_email, code, type, semester, announcements, students
+          let new_classroom = new Classroom(
+            {},
+            className,
+            new_user.name,
+            new_user.email,
+            classCode,
+            classType,
+            classSemester,
+            [],
+            [],
+            []
+          );
+          try {
+            let classRef = doc(db, "classrooms", classCode).withConverter(
+              classroomConverter
+            );
+            console.log("CLASS REF", classRef);
+            setDoc(classRef, new_classroom).then(console.log).
+            catch((err) => {throw err});
+            setDoc(ref, new_user).then(console.log).
+            catch((err) => {throw err});
+          } catch (error) {
+            console.log("Error adding class", error);
+          }
+          togglePopup();
         }
-        togglePopup();
-      }
+      });
+
     } catch (error) {
-      console.log("ERRROR BASICLALLY");
+      console.log("ERRROR BASICLALLY", error);
+      toast("🦄 Error creating classroom!!!", {
+        hideProgressBar: false,
+        autoClose: 2000,
+        type: "error",
+      });
     }
   };
 
@@ -71,8 +90,12 @@ function Classrooms() {
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
         let new_user = userSnap.data();
-        if (new_user.classrooms.includes(classCode)) {
-          alert("You are already in this classroom");
+        if (new_user.classrooms.includes(classCode)) {          alert("");
+          toast("🦄 You are already in this classroom!!!", {
+            hideProgressBar: false,
+            autoClose: 2000,
+            type: "info",
+          });
         } else {
           new_user.classrooms.push(classCode);
           try {
