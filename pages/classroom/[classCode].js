@@ -25,11 +25,13 @@ function Classroom() {
   const [attemptedQuizzes, setAttemptedQuizzes] = useState([]);
   const [displayQuiz, setDisplayQuiz] = useState(true);
   const [showClassQuizzes, setShowClassQuizzes] = useState(false);
+  const [showGraphs, setShowGraphs] = useState(false);
   const [uniqueQuizzes, setUniqueQuizzes] = useState([]);
   const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
   const [studentAttempted, setStudentAttempted] = useState(null);
   const [showAttempted, setShowAttempted] = useState(false);
   const [marks, setMarks] = useState(false);
+  const [graphsData, setGraphsData] = useState([]);
   const [loadmarks, setLoadmarks] = useState(false)
 
   useEffect(() => {
@@ -43,10 +45,9 @@ function Classroom() {
           setAttemptedQuizzes(data.attemptedQuizzes);
           const currentDate = new Date();
           const timestamp = currentDate.getTime();
-          if (data.quizzes && data.quizzes.validTill > timestamp) {
-            setQuiz(data.quizzes);
+          let allQuizzes = [];
+          if(data.attemptedQuizzes) {
             const temp = data.attemptedQuizzes;
-            console.log(data, "MYDATA")
             if(user) {
               if(temp !== undefined) {
                 var unique = [];
@@ -58,16 +59,38 @@ function Classroom() {
                     unique.push(temp[i].id);
                   }
                 }
-                // unique.push("A");
-                // unique.push("B");
-                // unique.push("C");
+                for(let i = 0; i < temp.length; i++) { 
+                  let quizzes_of_id = [];
+                  for(let j = 0; j < unique.length; j++) {
+                    if(temp[i].id === unique[j]) {
+                      let totalMarks = 0;
+                      let obtainedMarks = 0;
+                      for(let k = 0; k < temp[i].questions.length; k++) {
+                        totalMarks += Number(temp[i].questions[k].marks);
+                        obtainedMarks += temp[i].questions[k].obtainedMarks;
+                      }
+                      quizzes_of_id.push({
+                        "name": temp[i].userEmail,
+                        "totalMarks": totalMarks,
+                        "obtainedMarks": obtainedMarks,
+                        "quizName": temp[i].id
+                      });
+                    }
+                  }
+                  allQuizzes.push(quizzes_of_id);
+                }
+                setGraphsData(allQuizzes);
+                console.log(allQuizzes, "allQuizzes");
+                // unique.push("TEMP");
                 setUniqueQuizzes(unique);
+          }
+          if (data.quizzes && data.quizzes.validTill > timestamp) {
+                setQuiz(data.quizzes);
                 if(user.email === data.teacher_email)  {
                   setDisplayQuiz(false);
+                } else {
+                  setDisplayQuiz(true);
                 }
-              } else {
-                setDisplayQuiz(true);
-              }
             } else {
               setDisplayQuiz(false);
             }            
@@ -76,7 +99,8 @@ function Classroom() {
           }
           setLoading(false);
         }
-      });
+      }
+    });
     }
     return () => {
       componentMounted = false;
@@ -132,6 +156,27 @@ function Classroom() {
   // useEffect(() => {
   // }, [marks])
 
+  const getGraph = (gid) => {
+    if(graphsData.length > 0) {
+      var image = document.createElement('img');
+      fetch('https://visualizer.thankfulwater-49846abc.eastus.azurecontainerapps.io/'+gid, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(graphsData)
+      }).then(res => res.blob())
+      .then(blob => {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          image.src = reader.result;
+          document.getElementById('image-container').innerHTML = '';
+          document.getElementById('image-container').appendChild(image);
+        }
+        reader.readAsDataURL(blob);
+      }).catch(err => console.log(err));
+    }
+  }
     
   const selectQuiz = (e) => {
     setCurrentShowQuiz(e.target.value); 
@@ -234,8 +279,21 @@ function Classroom() {
                     </div>
                     <div className="col-12 col-md-6">
                       <div className="btn bg-custom text-white btn-block mt-3">
-                        <a onClick={() => setShowClassQuizzes(!showClassQuizzes)} className="custom-link">
+                        <a onClick={() => {
+                          setShowClassQuizzes(!showClassQuizzes);
+                          setShowGraphs(false);
+                        }} className="custom-link">
                           Quizzes
+                        </a>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="btn bg-custom text-white btn-block mt-3">
+                        <a onClick={() => {
+                          setShowGraphs(!showGraphs);
+                          setShowClassQuizzes(false);
+                        }} className="custom-link">
+                          Visualize Evaluations
                         </a>
                       </div>
                     </div>
@@ -247,7 +305,7 @@ function Classroom() {
               <div className="row">
                 <div className="main-class-area mt-3 col-12 col-md-10 mx-auto p-4">
                   {
-                    !showClassQuizzes && (
+                    (!showClassQuizzes && !showGraphs) && (
                       <div>
                         {classroom.teacher_email == user.email && (
                     <div>
@@ -389,7 +447,7 @@ function Classroom() {
                                           target: question.answer,
                                           attempt: question.current,
                                         }));
-                                        axios.post(process.env.NEXT_MARKING_API_URL, {
+                                        axios.post("https://marking-model.thankfulwater-49846abc.eastus.azurecontainerapps.io/gen_all_marks", {
                                           answers: targets_and_attempts
                                         }).then(res => {updateObtainedMarks(classCode, attempt.userEmail,res.data)
                                         setMarks(res.data.marks)}                               
@@ -415,6 +473,61 @@ function Classroom() {
                            </>
                           ))
                         }
+                      </div>
+                    )
+                  }
+                  {
+                    showGraphs && (
+                      <div>
+                        <h3 className="text-center">Visualize Evaluations</h3>
+                        <div className="row justify-content-center">
+                          <button className="col-12 col-md-6" style={{
+                              backgroundColor: "#fba118",
+                              color: "white",
+                              padding: "10px 20px",
+                              cursor: "pointer",
+                              margin: "1px",
+                              border: "none"
+                            }} onClick={() => {
+                            // Request to display Graph 1
+                            getGraph("chart1");
+                          }}>Performance Distribution</button>
+                          <button className="col-12 col-md-6" style={{
+                              backgroundColor: "#fba118",
+                              color: "white",
+                              padding: "10px 20px",
+                              cursor: "pointer",
+                              margin: "1px",
+                              border: "none"
+                            }} onClick={() => {
+                            // Request to display Graph 2
+                            getGraph("chart2");
+                          }}>Distribution of Obtained Marks</button>
+                          <button className="col-12 col-md-6" style={{
+                              backgroundColor: "#fba118",
+                              color: "white",
+                              padding: "10px 20px",
+                              margin: "1px",
+                              cursor: "pointer",
+                              border: "none"
+                            }} onClick={() => {
+                            // Request to display Graph 3
+                            getGraph("chart3");
+                          }}>Performance Heapmap</button>
+                          <button className="col-12 col-md-6" style={{
+                              backgroundColor: "#fba118",
+                              color: "white",
+                              padding: "10px 20px",
+                              cursor: "pointer",
+                              margin: "1px",
+                              border: "none"
+                            }} onClick={() => {
+                            // Request to display Graph 4
+                            getGraph("chart4");
+                          }}>Average Performance</button>
+                        </div>
+
+                        <div id="image-container" style={{display: "flex", justifyContent: "center"}}></div>
                       </div>
                     )
                   }
@@ -463,6 +576,7 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     });  
   }
 }
+
 
 
 export default Classroom;
