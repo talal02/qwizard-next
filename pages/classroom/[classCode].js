@@ -416,7 +416,7 @@ function Classroom() {
                                             <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Total Marks:</b> </div>
                                             <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{q.marks} </div>
                                             <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Marks Obtained:</b> </div>
-                                            <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{marks ? marks[index]: q.obtainedMarks } </div>
+                                            <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{marks ? (Math.round(marks[index] * Number(q.marks) * 10) / 10):q.obtainedMarks } </div>
                                           </div>
                                         </div>
                                       </>)
