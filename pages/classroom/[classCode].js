@@ -449,7 +449,9 @@ function Classroom() {
                                         }));
                                         axios.post("https://marking-model.thankfulwater-49846abc.eastus.azurecontainerapps.io/gen_all_marks", {
                                           answers: targets_and_attempts
-                                        }).then(res => {updateObtainedMarks(classCode, attempt.userEmail,res.data)
+                                        }).then(res => {
+                                          console.log(res.data);
+                                          updateObtainedMarks(classCode, attempt.userEmail,res.data);
                                         setMarks(res.data.marks)}                               
                                         ).catch(err => console.log('ERR! ', err)).finally(() => setLoadmarks(false));
                                       }
@@ -554,6 +556,13 @@ let fetchData = async (classCode) => {
   return null;
 };
 
+function Nround(num, decimalPlaces = 0) {
+  var p = Math.pow(10, decimalPlaces);
+  var n = (num * p) * (1 + Number.EPSILON);
+  return Math.round(n) / p;
+}
+
+
 let updateObtainedMarks = async (classCode, user, marks) => {
   let classroomRef = doc(db, "classrooms", classCode);
   let classroomSnapshot = await getDoc(classroomRef);
@@ -568,7 +577,7 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     console.log("marks", marks)
     for (let i = 0; i < questions.length; i++) {
       let question = questions[i];
-      question.obtainedMarks = (marks.marks[i] * Number(question.marks));
+      question.obtainedMarks = Nround((marks[i] * Number(question.marks)), 2);
       console.log(question.obtainedMarks);
     }
     await updateDoc(classroomRef, {
