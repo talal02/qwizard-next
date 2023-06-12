@@ -15,11 +15,11 @@ import Announcement from "../../components/Announcement";
 import { setLazyProp } from "next/dist/server/api-utils";
 
 function Classroom() {
-  const [user, setUser] = useAuthState(auth);
+  const [user, loading1, error1] = useAuthState(auth);
   const [text, setText] = useState("");
   const [announcements, setAnnouncements] = useState([]);
   const router = useRouter();
-  const { classCode } = router.query;
+  let { classCode } = router.query;
   const [classroom, setClassroom] = useState(null);
   const [quiz, setQuiz] = useState({});
   const [loading, setLoading] = useState(true);
@@ -31,22 +31,28 @@ function Classroom() {
   const [currentShowQuiz, setCurrentShowQuiz] = useState(null);
   const [studentAttempted, setStudentAttempted] = useState(null);
   const [showAttempted, setShowAttempted] = useState(false);
-  const [marks, setMarks] = useState(false);
   const [graphsData, setGraphsData] = useState([]);
-  const [loadmarks, setLoadmarks] = useState(false)
+  const [loadmarks, setLoadmarks] = useState(false);
+  const [marks, setMarks] = useState(false);
 
   useEffect(() => {
-    let componentMounted = true;
-    if (classCode != null) {
+    if(classCode === null || classCode === undefined) {
+      classCode = localStorage.getItem("classCode");
+    }
+    if(classCode != null) {
+      localStorage.setItem("classCode", classCode);
+    }
+    if (classCode) {
       console.log(classCode, "<-")
       fetchData(classCode).then((data) => {
-        if (componentMounted && data !== null) {
+        if (data !== null) {
           setClassroom(data);
           setAnnouncements(data.announcements);
           setAttemptedQuizzes(data.attemptedQuizzes);
           const currentDate = new Date();
           const timestamp = currentDate.getTime();
           let allQuizzes = [];
+          console.log("Setting quizzes", data.attemptedQuizzes, "USER", user);
           if(data.attemptedQuizzes) {
             const temp = data.attemptedQuizzes;
             if(user) {
@@ -85,6 +91,8 @@ function Classroom() {
                 // unique.push("TEMP");
                 setUniqueQuizzes(unique);
           }
+          console.log("Setting quizzes 2", data.quizzes);
+
           if (data.quizzes && data.quizzes.validTill > timestamp) {
                 setQuiz(data.quizzes);
                 if(user.email === data.teacher_email)  {
@@ -103,10 +111,7 @@ function Classroom() {
       }
     });
     }
-    return () => {
-      componentMounted = false;
-    };
-  }, [classCode]);
+  }, []);
 
   const postAnnouncement = async () => {
     try {
@@ -416,7 +421,7 @@ function Classroom() {
                                             <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Total Marks:</b> </div>
                                             <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{q.marks} </div>
                                             <div className="col-4" style={{ color: '#44a6c6',border: "1px solid orange" }}><b>Marks Obtained:</b> </div>
-                                            <div className="col-8" style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{marks ? (Math.round(marks[index] * Number(q.marks) * 10) / 10):q.obtainedMarks } </div>
+                                            <div className="col-8" id={`dynamic-${index}`} style={{ color: '#44a6c6',border: "1px solid orange",fontWeight:"600" }}>{marks ? (Math.round(marks[index] * Number(q.marks) * 10) / 10):q.obtainedMarks}</div>
                                           </div>
                                         </div>
                                       </>)
@@ -444,6 +449,7 @@ function Classroom() {
 
                                       <button className="floating-right-bottom-btn-new" disabled={loadmarks} onClick={() => {
                                         setLoadmarks(true);
+                                        console.log(attempt.questions);
                                         const targets_and_attempts = attempt.questions.map((question) => ({
                                           target: question.answer,
                                           attempt: question.current,
@@ -451,9 +457,10 @@ function Classroom() {
                                         axios.post("https://marking-model.thankfulwater-49846abc.eastus.azurecontainerapps.io/gen_all_marks", {
                                           answers: targets_and_attempts
                                         }).then(res => {
-                                          console.log(res.data);
                                           updateObtainedMarks(classCode, attempt.userEmail,res.data);
-                                        setMarks(res.data.marks)}                               
+                                          console.log(res.data);
+                                          setMarks(res.data);
+                                        }                               
                                         ).catch(err => console.log('ERR! ', err)).finally(() => setLoadmarks(false));
                                       }
                                     }
@@ -578,7 +585,7 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     console.log("marks", marks)
     for (let i = 0; i < questions.length; i++) {
       let question = questions[i];
-      question.obtainedMarks = (marks[i] * Number(question.marks));
+      question.obtainedMarks = Nround(marks[i] * Number(question.marks), 2);
       console.log(question.obtainedMarks);
     }
     await updateDoc(classroomRef, {
@@ -589,6 +596,7 @@ let updateObtainedMarks = async (classCode, user, marks) => {
       autoClose: 2000,
       type: "info",
     });
+    // reload page
   }
 }
 
