@@ -66,21 +66,22 @@ function Classroom() {
                     unique.push(temp[i].id);
                   }
                 }
-                for(let i = 0; i < temp.length; i++) { 
+                console.log(unique, "unique")
+                for(let i = 0; i < unique.length; i++) { 
                   let quizzes_of_id = [];
-                  for(let j = 0; j < unique.length; j++) {
-                    if(temp[i].id === unique[j]) {
+                  for(let j = 0; j < temp.length; j++) {
+                    if(temp[j].id === unique[i]) {
                       let totalMarks = 0;
                       let obtainedMarks = 0;
-                      for(let k = 0; k < temp[i].questions.length; k++) {
-                        totalMarks += Number(temp[i].questions[k].marks);
-                        obtainedMarks += temp[i].questions[k].obtainedMarks;
+                      for(let k = 0; k < temp[j].questions.length; k++) {
+                        totalMarks += Number(temp[j].questions[k].marks);
+                        obtainedMarks += temp[j].questions[k].obtainedMarks;
                       }
                       quizzes_of_id.push({
-                        "name": temp[i].userEmail,
+                        "name": temp[j].userEmail,
                         "totalMarks": totalMarks,
                         "obtainedMarks": obtainedMarks,
-                        "quizName": temp[i].id
+                        "quizName": temp[j].id
                       });
                     }
                   }
@@ -164,11 +165,13 @@ function Classroom() {
 
   const getGraph = (gid) => {
     if(graphsData.length > 0) {
+      console.log(graphsData);
       var image = document.createElement('img');
-      fetch('https://visualizer.thankfulwater-49846abc.eastus.azurecontainerapps.io/'+gid, {
+      fetch('https://xvisualizer.thankfulwater-49846abc.eastus.azurecontainerapps.io/'+gid, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         },
         body: JSON.stringify(graphsData)
       }).then(res => res.blob())
