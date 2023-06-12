@@ -582,6 +582,11 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     await updateDoc(classroomRef, {
       attemptedQuizzes: classroomData.attemptedQuizzes
     });  
+    toast("🦄 Quiz Checked!", {
+      hideProgressBar: false,
+      autoClose: 2000,
+      type: "info",
+    });
   }
 }
 
