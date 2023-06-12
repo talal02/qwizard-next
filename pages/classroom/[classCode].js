@@ -578,7 +578,7 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     console.log("marks", marks)
     for (let i = 0; i < questions.length; i++) {
       let question = questions[i];
-      question.obtainedMarks = (marks.marks[i] * Number(question.marks));
+      question.obtainedMarks = (marks[i] * Number(question.marks));
       console.log(question.obtainedMarks);
     }
     await updateDoc(classroomRef, {
