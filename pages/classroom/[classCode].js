@@ -389,7 +389,7 @@ function Classroom() {
                                           target: question.answer,
                                           attempt: question.current,
                                         }));
-                                        axios.post("https://152b-115-186-57-250.ngrok-free.app/evaluate_ans", {
+                                        axios.post(process.env.NEXT_MARKING_API_URL, {
                                           answers: targets_and_attempts
                                         }).then(res => {updateObtainedMarks(classCode, attempt.userEmail,res.data)
                                         setMarks(res.data.marks)}                               
