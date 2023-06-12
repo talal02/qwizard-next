@@ -572,14 +572,14 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     let index = classroomData.attemptedQuizzes.findIndex(quiz => quiz.userEmail === user);
     let attempted_quiz = classroomData.attemptedQuizzes[index];
     console.log(attempted_quiz)
-    let questions = attempted_quiz.questions;
     console.log(questions)
     console.log("marks", marks)
-    for (let i = 0; i < questions.length; i++) {
-      let question = questions[i];
-      question.obtainedMarks = Nround((marks[i] * Number(question.marks)), 2);
-      console.log(question.obtainedMarks);
+    for (let i = 0; i < attempted_quiz.questions.length; i++) {
+      console.log(i);
+      attempted_quiz.questions.obtainedMarks = Nround((marks[i] * Number(attempted_quiz.questions[i].marks)), 2);
+      console.log(attempted_quiz.questions.obtainedMarks);
     }
+    console.log("DONE");
     await updateDoc(classroomRef, {
       attemptedQuizzes: classroomData.attemptedQuizzes
     });  
