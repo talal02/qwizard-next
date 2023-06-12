@@ -574,8 +574,6 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     let attempted_quiz = classroomData.attemptedQuizzes[index];
     console.log(attempted_quiz)
     console.log("marks", marks)
-    setMarks(marks);
-    let m = [];
     for (let i = 0; i < attempted_quiz.questions.length; i++) {
       console.log(i);
       attempted_quiz.questions.obtainedMarks = Nround((marks[i] * Number(attempted_quiz.questions[i].marks)), 2);
