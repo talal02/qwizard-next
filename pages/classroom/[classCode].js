@@ -572,7 +572,6 @@ let updateObtainedMarks = async (classCode, user, marks) => {
     let index = classroomData.attemptedQuizzes.findIndex(quiz => quiz.userEmail === user);
     let attempted_quiz = classroomData.attemptedQuizzes[index];
     console.log(attempted_quiz)
-    console.log(questions)
     console.log("marks", marks)
     for (let i = 0; i < attempted_quiz.questions.length; i++) {
       console.log(i);
